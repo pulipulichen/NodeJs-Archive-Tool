@@ -1,4 +1,4 @@
-/* global process */
+/* global process, __dirname */
 
 const execShellCommand = require('./../cli/execShellCommand.js')
 const path = require('path')
@@ -16,7 +16,10 @@ module.exports = async function (file) {
     await sleep()
   }
   
-  let currentWordDirectory = process.cwd()
+  let currentWordDirectory = __dirname
+  try {
+    currentWordDirectory = process.cwd()
+  } catch (e) {}
   
   let targetDirName = path.parse(file).name
   let fileDir = path.dirname(file)
