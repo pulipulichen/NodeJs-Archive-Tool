@@ -1,7 +1,7 @@
 module.exports = {
   fulltext: {
-    fileType: [
-      'csv'
+    allowMIME: [
+      'text/csv'
     ]
   }
 }

@@ -11,6 +11,7 @@
   "author": "pudding",
   "contributors": [],
   "dependencies": {
+    "dayjs": "^1.10.5",
     "mime-types": "^2.1.31"
   }
 }

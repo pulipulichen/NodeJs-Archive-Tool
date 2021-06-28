@@ -7,6 +7,8 @@ const mime = require('mime-types')
 const extractFulltext = require('./extractFulltext.js')
 const getDirTotalSize = require('./getDirTotalSize.js')
 
+const config = require('./../../config.js')
+
 module.exports = async function (filepath, options) {
 
 //let filepath = "D:\\xampp\\htdocs\\projects-autoit\\AutoIt-Archive-Util\\[Document\\20210329-zip\\zip_002.zip"
@@ -50,7 +52,9 @@ module.exports = async function (filepath, options) {
   output.modified_time = stats.mtime
   
   output.fulltext = null
-  if (options.fulltext === true) {
+  if (options.fulltext === true
+          && output.isDir === false
+          && config.fulltext.allowMIME.indexOf(output.mime) > -1) {
     output.fulltext = await extractFulltext(filepath)
   }
 
