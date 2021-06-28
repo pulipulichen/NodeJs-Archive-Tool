@@ -1,10 +1,19 @@
 /* global process */
 
-const execShellCommand = require('./execShellCommand.js')
+const execShellCommand = require('./../cli/execShellCommand.js')
 const path = require('path')
 const fs = require('fs')
 
+const archiveIsLocked = require('./lock/archiveIsLocked.js')
+const archiveSetLock = require('./lock/archiveSetLock.js')
+const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+
+const sleep = require('./lock/sleep.js')
+
 let runFileArchiveCommand = async function (archiveFormat, file) {
+  while (archiveIsLocked(archiveFormat)) {
+    await sleep()
+  }
   
   let filename = path.basename(file)
   let fileDir = path.dirname(file)
@@ -20,7 +29,12 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   }
   //console.log(fileDir)
   //console.log(command)
+  
+  await archiveSetLock(archiveFormat, command)
+  
   await execShellCommand(command)
+  
+  archiveUnsetLock(archiveFormat)
   
 }
 
@@ -45,8 +59,8 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
 
 let checkArchiveExist = function (archiveFormat, file) {
   // 檢查檔案是否已經存在
-  let filename = path.basename(file)
-  let fileDir = path.dirname(file)
+//  let filename = path.basename(file)
+//  let fileDir = path.dirname(file)
   
   if (fs.existsSync(file + '.' + archiveFormat)) {
     return true

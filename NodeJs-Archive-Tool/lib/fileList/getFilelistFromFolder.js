@@ -1,3 +1,5 @@
+/* global Promise */
+
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 

@@ -1,10 +1,10 @@
 /* global __dirname */
 
 const fs = require('fs')
-const getArgv = require('./getArgv.js')
-const archiveFile = require('./archiveFile.js')
-const removeFile = require('./removeFile.js')
-const extractArchive = require('./extractArchive.js')
+const getArgv = require('./cli/getArgv.js')
+const archiveFile = require('./archive/archiveFile.js')
+const removeFile = require('./fileRemove/removeFile.js')
+const extractArchive = require('./archive/extractArchive.js')
 
 module.exports = async function (archiveFormat) {
   

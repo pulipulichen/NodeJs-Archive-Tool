@@ -1,10 +1,20 @@
 /* global process */
 
-const execShellCommand = require('./execShellCommand.js')
+const execShellCommand = require('./../cli/execShellCommand.js')
 const path = require('path')
 const fs = require('fs')
 
+const archiveIsLocked = require('./lock/archiveIsLocked.js')
+const archiveSetLock = require('./lock/archiveSetLock.js')
+const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+
+const sleep = require('./lock/sleep.js')
+
 module.exports = async function (file) {
+  let archiveFormat = 'extract'
+  while (archiveIsLocked(archiveFormat)) {
+    await sleep()
+  }
   
   let currentWordDirectory = process.cwd()
   
@@ -15,7 +25,11 @@ module.exports = async function (file) {
   
   let command = `7z e "${file}" -o"${targetDirName}/"`
   //console.log(command)
+  await archiveSetLock(archiveFormat, command)
+  
   await execShellCommand(command)
+  
+  archiveUnsetLock(archiveFormat)
   
   process.chdir(currentWordDirectory) 
   
