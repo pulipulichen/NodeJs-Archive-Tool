@@ -1,9 +1,5 @@
-const notifier = require('node-notifier');
-// String
-notifier.notify('Message');
-
-// Object
-notifier.notify({
-  title: 'My notification',
-  message: 'Hello, there!'
-});
+const buildFileList = require('./lib/buildFileList.js')
+buildFileList({
+  fulltext: true,
+  format: 'sqlite'
+})

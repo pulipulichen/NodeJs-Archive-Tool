@@ -1,6 +1,2 @@
-/* global __dirname */
-
-const fs = require('fs')
-const listFiles = require('./lib/listFiles.js')
-
-listFiles('zip')
+const listArchiveFiles = require('./lib/listArchiveFiles.js')
+listArchiveFiles('zip')

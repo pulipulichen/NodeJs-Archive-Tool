@@ -1,3 +1,4 @@
+#pragma compile(Icon, '../../assets/icon/file-list.ico')
 
 ;Local $fileList = ""
 FileChangeDir(@ScriptDir)
