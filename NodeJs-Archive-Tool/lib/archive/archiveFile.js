@@ -7,7 +7,9 @@ const fs = require('fs')
 const archiveIsLocked = require('./lock/archiveIsLocked.js')
 const archiveSetLock = require('./lock/archiveSetLock.js')
 const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+const moveFilesInSameNameFolder = require('./moveFilesInSameNameFolder.js')
 
+const get7zPath = require('./get7zPath.js')
 const sleep = require('./lock/sleep.js')
 
 let runFileArchiveCommand = async function (archiveFormat, file) {
@@ -22,13 +24,12 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   let command
   
   if (archiveFormat === 'zip') {
-    command = `7z a -tzip -mcu=on -mx=9 "${filename}.zip" "${filename}"`
+    command = `${get7zPath()} a -tzip -mcu=on -mx=9 "${filename}.zip" "${filename}"`
   }
   else if (archiveFormat === '7z') {
-    command = `7z a -tzip -mx=9 "${filename}.7z" "${filename}"`
+    command = `${get7zPath()} a -tzip -mx=9 "${filename}.7z" "${filename}"`
   }
   //console.log(fileDir)
-  //console.log(command)
   
   await archiveSetLock(archiveFormat, command)
   
@@ -40,6 +41,8 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
 
 let runDirArchiveCommand = async function (archiveFormat, file) {
   
+  moveFilesInSameNameFolder(file)
+  
   let filename = path.basename(file)
   let fileDir = file
   
@@ -47,10 +50,10 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   let command
   
   if (archiveFormat === 'zip') {
-    command = `7z a -tzip -mcu=on -mx=9 "../${filename}.zip" *`
+    command = `${get7zPath()} a -tzip -mcu=on -mx=9 "../${filename}.zip" *`
   }
   else if (archiveFormat === '7z') {
-    command = `7z a -tzip -mx=9 "../${filename}.7z" *`
+    command = `${get7zPath()} a -tzip -mx=9 "../${filename}.7z" *`
   }
   //console.log(fileDir)
   //console.log(command)

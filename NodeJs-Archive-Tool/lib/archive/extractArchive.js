@@ -8,7 +8,10 @@ const archiveIsLocked = require('./lock/archiveIsLocked.js')
 const archiveSetLock = require('./lock/archiveSetLock.js')
 const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
 
+const moveFilesInSameNameFolder = require('./moveFilesInSameNameFolder.js')
+
 const sleep = require('./lock/sleep.js')
+const get7zPath = require('./get7zPath.js')
 
 module.exports = async function (file) {
   let archiveFormat = 'extract'
@@ -26,7 +29,7 @@ module.exports = async function (file) {
   
   process.chdir(fileDir) 
   
-  let command = `7z e "${file}" -o"${targetDirName}/"`
+  let command = `${get7zPath()} x "${file}" -o"${targetDirName}/"`
   //console.log(command)
   await archiveSetLock(archiveFormat, command)
   
@@ -36,6 +39,10 @@ module.exports = async function (file) {
   
   process.chdir(currentWordDirectory) 
   
-  return fileDir + '/' + targetDirName
+  let targetPath = fileDir + '/' + targetDirName
+  
+  moveFilesInSameNameFolder(targetPath)
+  
+  return targetPath
 }
 
