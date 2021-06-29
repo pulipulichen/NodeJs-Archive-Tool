@@ -23,11 +23,14 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   process.chdir(fileDir)
   let command
   
+  let outputFile = file
   if (archiveFormat === 'zip') {
+    outputFile = outputFile + '.zip'
     command = `${get7zPath()} a -tzip -mcu=on -mx=9 "${filename}.zip" "${filename}"`
   }
   else if (archiveFormat === '7z') {
-    command = `${get7zPath()} a -tzip -mx=9 "${filename}.7z" "${filename}"`
+    outputFile = outputFile + '.7z'
+    command = `${get7zPath()} a -t7z -mx=9 "${filename}.7z" "${filename}"`
   }
   //console.log(fileDir)
   
@@ -37,6 +40,7 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   
   archiveUnsetLock(archiveFormat)
   
+  return outputFile
 }
 
 let runDirArchiveCommand = async function (archiveFormat, file) {
@@ -49,15 +53,20 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   process.chdir(fileDir)
   let command
   
+  let outputFile = file
   if (archiveFormat === 'zip') {
+    outputFile = outputFile + '.zip'
     command = `${get7zPath()} a -tzip -mcu=on -mx=9 "../${filename}.zip" *`
   }
   else if (archiveFormat === '7z') {
-    command = `${get7zPath()} a -tzip -mx=9 "../${filename}.7z" *`
+    outputFile = outputFile + '.7z'
+    command = `${get7zPath()} a -t7z -mx=9 "../${filename}.7z" *`
   }
   //console.log(fileDir)
   //console.log(command)
   await execShellCommand(command)
+  
+  return outputFile
 }
 
 let checkArchiveExist = function (archiveFormat, file) {
@@ -73,7 +82,7 @@ let checkArchiveExist = function (archiveFormat, file) {
 
 module.exports = async function (archiveFormat, file) {
   if (checkArchiveExist(archiveFormat, file)) {
-    return false
+    return file + '.' + archiveFormat
   }
   
   // --------------------
@@ -83,13 +92,17 @@ module.exports = async function (archiveFormat, file) {
     currentWordDirectory = process.cwd()
   } catch (e) {}
   
+  let outputPath
   if (fs.lstatSync(file).isDirectory()) {
-    await runDirArchiveCommand(archiveFormat, file)
+    //console.log('a')
+    outputPath = await runDirArchiveCommand(archiveFormat, file)
   }
   else {
-    await runFileArchiveCommand(archiveFormat, file)
+    //console.log('b')
+    outputPath = await runFileArchiveCommand(archiveFormat, file)
   }
   process.chdir(currentWordDirectory) 
   
+  return outputPath
 }
 

@@ -20,6 +20,8 @@ module.exports = async function (options) {
     compress = false
   } = options
   
+  let outputFile
+  
   let output = getArgv()
   //let file = output.join('')
   for (let len = output.length, i = len; i > 0; i--) {
@@ -35,7 +37,11 @@ module.exports = async function (options) {
     // --------------------------
     
     let fileList = await getFileAndDirFromFolder(file)
-    let targetFile = file + '_' + dayjs().format('YYYYMMDD-hhmm') + '_list'
+    
+    
+    const stats = fs.statSync(file)
+    
+    let targetFile = file + '_' + dayjs(stats.ctime).format('YYYYMMDD-hhmm') + '.list'
     let targetFilePath
     
     if (fs.existsSync(targetFile)) {
@@ -55,7 +61,11 @@ module.exports = async function (options) {
       //console.log(attrs)
       
       if (format === 'csv') {
-        targetFilePath = await addFileListRowCSV(attrs, targetFile)
+        let result = await addFileListRowCSV(attrs, targetFile)
+        //console.log(result)
+        if (result) {
+          targetFilePath = result
+        }
       }
       else if (format === 'sqlite') {
         let result = await addFileListRowSQLite(attrs, targetFile, fileHandler)
@@ -69,12 +79,14 @@ module.exports = async function (options) {
     //console.log(targetFilePath)
     
     //console.log(compress, targetFilePath)
+    outputFile = targetFilePath
     if (compress !== false) {
-      await archiveFile(compress, targetFilePath)
+      outputFile = await archiveFile(compress, targetFilePath)
       await removeFile(targetFilePath)
     }
     
     // --------------------------
   } // for (let len = output.length, i = len; i > 0; i--) {
 
+  return outputFile
 }
