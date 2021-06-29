@@ -11,6 +11,7 @@
   "author": "pudding",
   "contributors": [],
   "dependencies": {
+    "better-sqlite3": "^7.4.1"
     "csv-append": "^1.0.0",
     "dayjs": "^1.10.5",
     "mime-types": "^2.1.31"
