@@ -37,7 +37,7 @@ module.exports = async function (archiveFormat) {
       else {
         // 表示解壓縮之後，刪除該檔案
         await extractArchive(file)
-        //await removeFile(file)
+        await removeFile(file)
       }
     }
     else {

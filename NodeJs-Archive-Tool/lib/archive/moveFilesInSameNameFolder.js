@@ -3,7 +3,7 @@ const path = require('path')
 
 function moveFilesInSameNameFolder(file) {
   
-  //console.log(fs.existsSync(file), fs.lstatSync(file).isDirectory())
+  //console.log(file, fs.existsSync(file), fs.lstatSync(file).isDirectory())
   
   // 檢查這個filePath是不是資料夾
   if (fs.existsSync(file) === false
@@ -22,6 +22,22 @@ function moveFilesInSameNameFolder(file) {
   if (filesInDir.length !== 1
           || filesInDir[0] !== dirName) {
     return false
+  }
+  
+  filesInDir = filesInDir[0]
+  
+  if (fs.lstatSync(file + '/' + filesInDir).isDirectory() === false) {
+    // 表示只有它一個檔案
+    let oldName = file + '/' + filesInDir
+    let newName = path.dirname(file) + '/' + filesInDir + '.tmp'
+    
+    while (fs.existsSync(newName)) {
+      newName = newName + '.tmp'
+    }
+    fs.renameSync(oldName, newName)
+    fs.rmdirSync(file)
+    fs.renameSync(newName, file)
+    return true
   }
   
   fs.readdirSync(file + '/' + filesInDir, { withFileTypes: true })

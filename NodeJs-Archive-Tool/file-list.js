@@ -1,5 +1,5 @@
 const buildFileList = require('./lib/buildFileList.js')
 buildFileList({
-  fulltext: true,
-  format: 'sqlite'
+  fulltext: false,
+  format: 'csv'
 })

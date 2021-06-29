@@ -10,9 +10,15 @@ const addFileListRowSQLite = require('./buildList/addFileListRowSQLite.js')
 
 const dayjs = require('dayjs')
 
+const archiveFile = require('./archive/archiveFile.js')
+const removeFile = require('./fileRemove/removeFile.js')
+
 module.exports = async function (options) {
   
-  let { format = 'csv' } = options
+  let { 
+    format = 'csv',
+    compress = false
+  } = options
   
   let output = getArgv()
   //let file = output.join('')
@@ -29,7 +35,8 @@ module.exports = async function (options) {
     // --------------------------
     
     let fileList = await getFileAndDirFromFolder(file)
-    let targetFile = file + dayjs().format('YYYYMMDD-hhmm') + '.list'
+    let targetFile = file + '_' + dayjs().format('YYYYMMDD-hhmm') + '_list'
+    let targetFilePath
     
     if (fs.existsSync(targetFile)) {
       fs.unlinkSync(targetFile)
@@ -48,15 +55,24 @@ module.exports = async function (options) {
       //console.log(attrs)
       
       if (format === 'csv') {
-        await addFileListRowCSV(attrs, targetFile)
+        targetFilePath = await addFileListRowCSV(attrs, targetFile)
       }
-      else if (format === 'sqlit') {
-        fileHandler = await addFileListRowSQLite(attrs, targetFile, fileHandler)
+      else if (format === 'sqlite') {
+        let result = await addFileListRowSQLite(attrs, targetFile, fileHandler)
+        fileHandler = result.fileHandler
+        targetFilePath = result.targetFilePath
       }
       //await sleep(3000)
     }
     
     //console.log(fileList)
+    //console.log(targetFilePath)
+    
+    //console.log(compress, targetFilePath)
+    if (compress !== false) {
+      await archiveFile(compress, targetFilePath)
+      await removeFile(targetFilePath)
+    }
     
     // --------------------------
   } // for (let len = output.length, i = len; i > 0; i--) {

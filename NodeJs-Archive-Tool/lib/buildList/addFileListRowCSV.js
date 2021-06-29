@@ -5,7 +5,7 @@ let doAppend = function (targetFile, attrsString, resolve) {
     if (err) throw err;
 
     //console.log('Saved!');
-    resolve()
+    resolve(targetFile)
   });
 }
 

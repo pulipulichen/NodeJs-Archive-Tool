@@ -1,21 +1,36 @@
 const Database = require('better-sqlite3');
+const dayjs = require('dayjs')
+const fs = require('fs')
 
-let main = function (attrs, targetFile, dbHandler) {
+function main (attrs, targetFile, dbHandler) {
+  //console.log(attrs)
   
+  targetFile = targetFile + '.sqlite'
   if (!dbHandler) {
     dbHandler = buildDBHandler(attrs, targetFile)
   }
   
-  dbHandler(attrs)
+  dbHandler(cleanAttrs(attrs))
+  
+  return {
+    fileHandler: dbHandler,
+    targetFilePath: targetFile
+  }
 }
 
 function buildDBHandler (attrs, targetFile) {
-  const db = new Database(targetFile + '.sqlite')
   
-  let createTableSQL = buildCreateTableSQL(attrs)
-  db.exec(createTableSQL);
+  let isExists = fs.existsSync(targetFile)
+  
+  const db = new Database(targetFile)
+
+  if (isExists === false) {
+    let createTableSQL = buildCreateTableSQL(attrs)
+    db.exec(createTableSQL);
+  }
   
   let prepareSQL = buildPrepareSQL(attrs)
+  //console.log(prepareSQL)
   const insert = db.prepare(prepareSQL);
 
   const insertHandler = db.transaction((attr) => {
@@ -42,6 +57,9 @@ function buildCreateTableSQL (attrs) {
     if (dataType === 'string') {
       dataType = 'TEXT'
     }
+    if (dataType === 'boolean') {
+      dataType = 'INTEGER'
+    }
     else if (dataType === 'number') {
       if (attrs[column] % 1 !== 0) {
         dataType = 'REAL'
@@ -58,7 +76,7 @@ function buildCreateTableSQL (attrs) {
   })
   
   return `CREATE TABLE filelist (
-    id INTEGER AUTOINCREMENT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
 	${columns.join(',\n')}
 );`
 }
@@ -70,10 +88,40 @@ function buildCreateTableSQL (attrs) {
  * 'INSERT INTO cats (name, age) VALUES (@name, @age)'
  */
 function buildPrepareSQL (attrs) {
-  let columns = Object.key(attrs) 
+  let columns = Object.keys(attrs) 
   let columnsAt = columns.map(c => '@' + c)
 
   return `INSERT INTO filelist (${columns.join(', ')}) VALUES (${columnsAt.join(', ')})`
+}
+
+function cleanAttrs(attrs) {
+  let output = {}
+  
+  Object.keys(attrs).forEach(column => {
+    let value = attrs[column]
+    
+    if (typeof(value) === 'boolean') {
+      if (value === true) {
+        value = 1
+      }
+      else {
+        value = 0
+      }
+    }
+    else if (value instanceof Date) {
+      value = dayjs(value).format('YYYY-MM-DD HH:mm:ss.SSS')
+      //console.log(value)
+    }
+    else if (value === undefined) {
+      value = null
+    }
+    
+    output[column] = value
+  })
+  
+  //console.log(output)
+  
+  return output
 }
 
 module.exports = main

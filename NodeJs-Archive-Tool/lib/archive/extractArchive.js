@@ -10,7 +10,7 @@ const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
 
 const moveFilesInSameNameFolder = require('./moveFilesInSameNameFolder.js')
 
-const sleep = require('./lock/sleep.js')
+const sleep = require('./../await/sleep.js')
 const get7zPath = require('./get7zPath.js')
 
 module.exports = async function (file) {
