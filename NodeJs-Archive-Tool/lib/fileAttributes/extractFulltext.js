@@ -17,11 +17,17 @@ let extractFulltext = async function (filepath, mime) {
   
   let output
   if (type === 'tika') {
-    output = extractByTika(filepath)
+    output = await extractByTika(filepath)
   }
   else {
     output = extractByPlainText(filepath)
   }
+  
+//  console.log(`[${filepath}]`)
+//  console.log(`====
+//${output}
+//${typeof(output)}
+//====`)
   
   output = cleanText(output)
   //console.log('----------------')
@@ -75,7 +81,7 @@ let extractByTika = async function (filepath) {
 }
 
 let extractByPlainText = function (filepath) {
-  return fs.readFileSync(filepath)
+  return fs.readFileSync(filepath).toString()
 } 
 
 module.exports = extractFulltext
