@@ -11,6 +11,8 @@ let doAppend = function (targetFile, attrsString, resolve) {
 
 module.exports = async function (attrs, targetFile) {
   
+  targetFile = targetFile + '.csv'
+  
   return new Promise(resolve => {
     let keys = Object.keys(attrs)
     let attrsString = keys.map(a => {
