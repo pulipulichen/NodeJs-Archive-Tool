@@ -49,7 +49,8 @@ function moveFilesInSameNameFolder(file) {
     })
   
   //console.log(file + '/' + filesInDir)
-  if (fs.existsSync(file + '/' + filesInDir)) {
+  if (fs.existsSync(file + '/' + filesInDir)
+          && fs.readdirSync(file + '/' + filesInDir, { withFileTypes: true }).length === 0) {
     try {
       fs.rmdirSync(file + '/' + filesInDir)
     }

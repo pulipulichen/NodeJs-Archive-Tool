@@ -53,9 +53,8 @@ module.exports = async function (filepath, options) {
   
   output.fulltext = null
   if (options.fulltext === true
-          && output.isDir === false
-          && config.fulltext.allowMIME.indexOf(output.mime) > -1) {
-    output.fulltext = await extractFulltext(filepath)
+          && output.isDir === false) {
+    output.fulltext = await extractFulltext(filepath, output.mime)
   }
 
   return output
