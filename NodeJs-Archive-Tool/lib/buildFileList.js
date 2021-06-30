@@ -17,6 +17,8 @@ const archiveIsLocked = require('./lock/archiveIsLocked.js')
 const archiveSetLock = require('./lock/archiveSetLock.js')
 const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
 
+const progressIndicator = require('./progressIndicator/progressIndicator.js')
+
 module.exports = async function (options) {
   
   let { 
@@ -29,6 +31,8 @@ module.exports = async function (options) {
   let output = getArgv()
   
   let lockKey = 'build-list'
+  
+  let lastStatus
   //let file = output.join('')
   for (let len = output.length, i = len; i > 0; i--) {
     let file = output[(len - i)]
@@ -62,6 +66,8 @@ module.exports = async function (options) {
     
     let fileHandler
     
+    lastStatus = progressIndicator(file, 0, fileList.length, lastStatus)
+    
     for (let listLen = fileList.length, j = listLen; j > 0; j--) {
       let f = fileList[(listLen - j)]
       
@@ -84,7 +90,15 @@ module.exports = async function (options) {
         fileHandler = result.fileHandler
         targetFilePath = result.targetFilePath
       }
-      //await sleep(3000)
+      //await sleep(10000)
+      
+      lastStatus = progressIndicator(file, (listLen - j), listLen, lastStatus)
+      
+    } // for (let listLen = fileList.length, j = listLen; j > 0; j--) {
+    
+    if (lastStatus.indicatorFileName 
+            && fs.existsSync(lastStatus.indicatorFileName)) {
+      fs.unlinkSync(lastStatus.indicatorFileName)
     }
     
     //console.log(fileList)
@@ -96,6 +110,8 @@ module.exports = async function (options) {
       outputFile = await archiveFile(compress, targetFilePath)
       await removeFile(targetFilePath)
     }
+    
+    
     
     archiveUnsetLock(lockKey)
     
