@@ -43,10 +43,21 @@ module.exports = async function (options) {
     let list = await buildFileList(options)
     //console.log('[[[LIST]]]', list, file)
     let archive = await archiveFile(archiveFormat, file)
-    console.log('[[[archive]]]', archive)
+    //console.log('[[[archive]]]', archive)
+    //console.log(' ')
     await removeFile(file)
     
-    fs.mkdirSync(file)
+    //console.log('prepare to mkdir:', file)
+    let notPassed = true
+    while (notPassed) {
+      try {
+        fs.mkdirSync(file)
+        notPassed = false
+      }
+      catch (e) {
+        await sleep(500)
+      }
+    }
     fs.renameSync(list, file + '/' + path.basename(list))
     fs.renameSync(archive, file + '/' + path.basename(archive))
     

@@ -1,4 +1,4 @@
-#pragma compile(Icon, '../../assets/icon/zip-icon.ico')
+#pragma compile(Icon, '../../assets/icon/file-list-archive.ico')
 
 ;Local $fileList = ""
 FileChangeDir(@ScriptDir)
@@ -8,7 +8,7 @@ For $i = 1 To $CmdLine[0]
 	  Local $f = $CmdLine[$i]
 	  ;$fileList = $fileList & ' "' & $f & '"'
 
-      RunWait('node ../../zip-archive.js "' & $f & '"', "", @SW_HIDE)
+      RunWait('node ../../file-list-archive.js "' & $f & '"', "", @SW_HIDE)
    EndIf
 Next
 
