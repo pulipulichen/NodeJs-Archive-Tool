@@ -4,9 +4,9 @@ const execShellCommand = require('./../cli/execShellCommand.js')
 const path = require('path')
 const fs = require('fs')
 
-const archiveIsLocked = require('./lock/archiveIsLocked.js')
-const archiveSetLock = require('./lock/archiveSetLock.js')
-const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+const archiveIsLocked = require('./../lock/archiveIsLocked.js')
+const archiveSetLock = require('./../lock/archiveSetLock.js')
+const archiveUnsetLock = require('./../lock/archiveUnsetLock.js')
 
 const moveFilesInSameNameFolder = require('./moveFilesInSameNameFolder.js')
 

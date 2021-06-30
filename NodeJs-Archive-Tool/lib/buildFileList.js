@@ -13,6 +13,10 @@ const dayjs = require('dayjs')
 const archiveFile = require('./archive/archiveFile.js')
 const removeFile = require('./fileRemove/removeFile.js')
 
+const archiveIsLocked = require('./lock/archiveIsLocked.js')
+const archiveSetLock = require('./lock/archiveSetLock.js')
+const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+
 module.exports = async function (options) {
   
   let { 
@@ -23,6 +27,8 @@ module.exports = async function (options) {
   let outputFile
   
   let output = getArgv()
+  
+  let lockKey = 'build-list'
   //let file = output.join('')
   for (let len = output.length, i = len; i > 0; i--) {
     let file = output[(len - i)]
@@ -35,6 +41,12 @@ module.exports = async function (options) {
     }
 
     // --------------------------
+    
+    while (archiveIsLocked(lockKey)) {
+      await sleep()
+    }
+    
+    await archiveSetLock(lockKey, file)
     
     let fileList = await getFileAndDirFromFolder(file)
     
@@ -84,6 +96,8 @@ module.exports = async function (options) {
       outputFile = await archiveFile(compress, targetFilePath)
       await removeFile(targetFilePath)
     }
+    
+    archiveUnsetLock(lockKey)
     
     // --------------------------
   } // for (let len = output.length, i = len; i > 0; i--) {
