@@ -96,7 +96,8 @@ module.exports = async function (options) {
       
     } // for (let listLen = fileList.length, j = listLen; j > 0; j--) {
     
-    if (lastStatus.indicatorFileName 
+    if (lastStatus 
+            && lastStatus.indicatorFileName 
             && fs.existsSync(lastStatus.indicatorFileName)) {
       fs.unlinkSync(lastStatus.indicatorFileName)
     }
