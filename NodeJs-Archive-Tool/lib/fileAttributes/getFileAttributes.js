@@ -25,6 +25,8 @@ module.exports = async function (filepath, options) {
     }
   }
   
+  output.filepath = output.filepath.replace(/\\/g, '/')
+  
   const stats = fs.statSync(filepath)
   output.isDir = stats.isDirectory()
   

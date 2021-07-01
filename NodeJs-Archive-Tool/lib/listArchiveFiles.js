@@ -58,8 +58,9 @@ module.exports = async function (archiveFormat) {
     }
     catch (e) {
       var today = new Date();
-      var time = today.getHours() + today.getMinutes()
-      fs.writeFileSync(file + '-' + time + '.error', e)
+      var time = today.getHours() + '' + today.getMinutes()
+      fs.writeFileSync(file + '-archive-' + time + '.error.txt', e.stack)
+      throw e
     } 
   } // for (let len = output.length, i = len; i > 0; i--) {
 
