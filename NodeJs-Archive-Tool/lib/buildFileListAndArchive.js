@@ -2,21 +2,40 @@ const fs = require('fs')
 const path = require('path')
 
 const getArgv = require('./cli/getArgv.js')
-const getFileAndDirFromFolder = require('./fileList/getFileAndDirFromFolder.js')
-const getFileAttributes = require('./fileAttributes/getFileAttributes.js')
 
-const sleep = require('./await/sleep.js')
+let getFileAndDirFromFolder
+let getFileAttributes
 
-const addFileListRowCSV = require('./buildList/addFileListRowCSV.js')
-const addFileListRowSQLite = require('./buildList/addFileListRowSQLite.js')
+let sleep
 
-const dayjs = require('dayjs')
+let addFileListRowCSV
+let addFileListRowSQLite
 
-const archiveFile = require('./archive/archiveFile.js')
-const removeFile = require('./fileRemove/removeFile.js')
+let dayjs
 
-const buildFileList = require('./buildFileList.js')
-const listArchiveFiles = require('./listArchiveFiles.js')
+let archiveFile
+let removeFile
+
+let buildFileList
+let listArchiveFiles
+
+function loadPackages () {
+  getFileAndDirFromFolder = require('./fileList/getFileAndDirFromFolder.js')
+  getFileAttributes = require('./fileAttributes/getFileAttributes.js')
+
+  sleep = require('./await/sleep.js')
+
+  addFileListRowCSV = require('./buildList/addFileListRowCSV.js')
+  addFileListRowSQLite = require('./buildList/addFileListRowSQLite.js')
+
+  dayjs = require('dayjs')
+
+  archiveFile = require('./archive/archiveFile.js')
+  removeFile = require('./fileRemove/removeFile.js')
+
+  buildFileList = require('./buildFileList.js')
+  listArchiveFiles = require('./listArchiveFiles.js')
+}
 
 module.exports = async function (options) {
   
@@ -32,34 +51,49 @@ module.exports = async function (options) {
     let file = output[(len - i)]
     
     //console.log(file, fs.existsSync(file))
+    try {
+      
+      if (!sleep) {
+        loadPackages()
+      }
 
-    if (fs.existsSync(file) === false
-          || fs.lstatSync(file).isDirectory() === false) {
-      return false
+      if (fs.existsSync(file) === false) {
+        continue
+      }
+      
+      if (fs.lstatSync(file).isDirectory() === false) {
+        throw Error(file + ' should be a directory.')
+      }
+
+      // --------------------------
+      //console.log(options)
+      let list = await buildFileList(options)
+      //console.log('[[[LIST]]]', list, file)
+      let archive = await archiveFile(archiveFormat, file)
+      //console.log('[[[archive]]]', archive)
+      //console.log(' ')
+      await removeFile(file)
+
+      //console.log('prepare to mkdir:', file)
+      let notPassed = true
+      while (notPassed) {
+        try {
+          fs.mkdirSync(file)
+          notPassed = false
+        }
+        catch (e) {
+          await sleep(500)
+        }
+      }
+      fs.renameSync(list, file + '/' + path.basename(list))
+      fs.renameSync(archive, file + '/' + path.basename(archive))
     }
-
-    // --------------------------
-    //console.log(options)
-    let list = await buildFileList(options)
-    //console.log('[[[LIST]]]', list, file)
-    let archive = await archiveFile(archiveFormat, file)
-    //console.log('[[[archive]]]', archive)
-    //console.log(' ')
-    await removeFile(file)
+    catch (e) {
+      var today = new Date();
+      var time = today.getHours() + today.getMinutes()
+      fs.writeFileSync(file + '-' + time + '.error', e)
+    } 
     
-    //console.log('prepare to mkdir:', file)
-    let notPassed = true
-    while (notPassed) {
-      try {
-        fs.mkdirSync(file)
-        notPassed = false
-      }
-      catch (e) {
-        await sleep(500)
-      }
-    }
-    fs.renameSync(list, file + '/' + path.basename(list))
-    fs.renameSync(archive, file + '/' + path.basename(archive))
     
   } // for (let len = output.length, i = len; i > 0; i--) {
 

@@ -3,7 +3,7 @@ const path = require('path')
 
 const dayjs = require('dayjs')
 
-function progressIndicator(file, i, len, lastStatus = {}) {
+async function progressIndicator(file, i, len, lastStatus = {}) {
   
   let percent = Math.ceil((i / len) * 100) 
   //console.log(percent)
@@ -25,6 +25,10 @@ function progressIndicator(file, i, len, lastStatus = {}) {
     fs.writeFileSync(newIndicatorFileName, file)
   }
   else {
+    while (!fs.existsSync(lastStatus.indicatorFileName)) {
+      await sleep(1000)
+    }
+    
     fs.renameSync(lastStatus.indicatorFileName, newIndicatorFileName)
   }
   
