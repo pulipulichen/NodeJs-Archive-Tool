@@ -5,20 +5,15 @@ let getArgv = require('./cli/getArgv.js')
 
 let bundleFilesMain
 
-let archiveIsLocked
-let archiveSetLock
-let archiveUnsetLock
-let sleep
+const archiveIsLocked = require('./lock/archiveIsLocked.js')
+const archiveSetLock = require('./lock/archiveSetLock.js')
+const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+  
+const sleep = require('./await/sleep.js')
 
 
 function loadPackages () {
   bundleFilesMain = require('./bundleFiles/bundleFilesMain.js')
-  
-  archiveIsLocked = require('./lock/archiveIsLocked.js')
-  archiveSetLock = require('./lock/archiveSetLock.js')
-  archiveUnsetLock = require('./lock/archiveUnsetLock.js')
-  
-  sleep = require('./await/sleep.js')
 }
 
 // ---------------
@@ -70,6 +65,7 @@ module.exports = async function (options) {
       var today = new Date();
       var time = today.getHours() + '' + today.getMinutes()
       fs.writeFileSync(file + '-' + lockKey + '-' + time + '.error.txt', e.stack)
+      archiveUnsetLock(lockKey)
       
       throw e
     } 

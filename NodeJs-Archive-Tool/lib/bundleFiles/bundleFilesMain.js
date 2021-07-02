@@ -3,7 +3,9 @@ const path = require('path')
 
 const dayjs = require('dayjs')
 const getFilesInDirectory = require('./../fileList/getFilesInDirectory.js')
+const getDirectories = require('./../fileList/getDirectories.js')
 const extractKeywordsFromFilenameList = require('./extractKeywordsFromFilenameList.js')
+const moveFilesToBundle = require('./moveFilesToBundle.js')
 
 async function bundleFilesMain (options, dir) {
   
@@ -14,18 +16,31 @@ async function bundleFilesMain (options, dir) {
   // -------------------
   
   let files = await getFilesInDirectory(dir)
+  let subdirs = await getDirectories(dir)
+  subdirs = subdirs.map(d => path.basename(d))
   
   // 先按照建立時間順序排序
   let filesObjectSorted = sortFiles(files)
+  //console.log(filesObjectSorted)
   
   let bundles = createBundleOfFiles(filesObjectSorted, bundleIntervalHours)
+  //console.log(bundles)
   
-  let bundleNames = createBundleNames(bundles)
+  let bundleNames = createBundleNames(bundles, dir, subdirs)
+  
+  // 確認是否有類似資料夾的名字
+  await moveFilesToBundle(dir, bundles, bundleNames)
+  
+  //console.log(bundleNames)
 }
 
 function sortFiles (files) {
   let fileObjects = files.map(file => {
     let ctime = fs.lstatSync(file).ctime
+    if (file.endsWith('2016年的檔案.csv')) {
+      ctime = dayjs('20160101').toDate()
+    }
+    
     let parse = path.parse(file)
     
     let ext = parse.ext
@@ -54,14 +69,16 @@ function createBundleOfFiles (fileObjects, bundleIntervalHours) {
   let bundles = []
   let currentBundle = []
   
-  let intervalMS = bundleFilesMain * 60 * 60 * 1000
+  let intervalMS = bundleIntervalHours * 60 * 60 * 1000
   
   fileObjects.forEach(fileObject => {
     if (!lastCtimeUnix) {
       currentBundle.push(fileObject)
       lastCtimeUnix = fileObject.ctimeUnix
+      return true
     }
     
+    //console.log(fileObject.ctimeUnix - lastCtimeUnix, intervalMS)
     if (fileObject.ctimeUnix - lastCtimeUnix > intervalMS) {
       bundles.push(currentBundle)
       
@@ -69,6 +86,7 @@ function createBundleOfFiles (fileObjects, bundleIntervalHours) {
     }
     
     currentBundle.push(fileObject)
+    lastCtimeUnix = fileObject.ctimeUnix
   })
   
   if (currentBundle.length !== 0) {
@@ -78,15 +96,29 @@ function createBundleOfFiles (fileObjects, bundleIntervalHours) {
   return bundles
 }
 
-function createBundleNames (bundles) {
+function createBundleNames (bundles, dir, subdirs) {
   return bundles.map(bundle => {
     let ctime = bundle[0].ctime
     let dateString = dayjs(ctime).format('YYYYMMDD')
     
+    // 先確認看看有沒有跟這個日期一樣的子資料夾
+    for (let i = 0; i < subdirs.length; i++) {
+      if (subdirs[i].startsWith(dateString)) {
+        return subdirs[i]
+      }
+    }
+    
     let filenameList = buildWeightedFilelist(bundle)
     let keyword = extractKeywordsFromFilenameList(filenameList)
     
-    return dateString + ' ' + dateString
+    let bundleName = dateString + ' ' + keyword
+    
+    // 檢查有沒有這個資料夾
+    while (fs.existsSync(dir + '/' + bundleName)) {
+      bundleName = bundleName + ' (' + dayjs().format('YYYYMMDD') + ')'
+    }
+    
+    return bundleName.trim()
   })
 }
 
@@ -116,6 +148,5 @@ function buildWeightedFilelist (bundle) {
   
   return filelist
 }
-
 
 module.exports = bundleFilesMain

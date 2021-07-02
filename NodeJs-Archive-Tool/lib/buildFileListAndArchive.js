@@ -92,6 +92,7 @@ module.exports = async function (options) {
       var today = new Date();
       var time = today.getHours() + '' + today.getMinutes()
       fs.writeFileSync(file + '-file-list-archive-' + time + '.error.txt', e.stack)
+      archiveUnsetLock(lockKey)
       
       throw e
     } 
