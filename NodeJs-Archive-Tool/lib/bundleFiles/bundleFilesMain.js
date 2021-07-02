@@ -37,9 +37,9 @@ async function bundleFilesMain (options, dir) {
 function sortFiles (files) {
   let fileObjects = files.map(file => {
     let ctime = fs.lstatSync(file).ctime
-    if (file.endsWith('2016年的檔案.csv')) {
-      ctime = dayjs('20160101').toDate()
-    }
+//    if (file.endsWith('2016年的檔案.csv')) {
+//      ctime = dayjs('20160101').toDate()
+//    }
     
     let parse = path.parse(file)
     
