@@ -28,6 +28,9 @@ async function bundleFilesMain (options, dir) {
   
   let bundleNames = createBundleNames(bundles, dir, subdirs)
   
+  //console.log(bundleNames)
+  //return false
+  
   // 確認是否有類似資料夾的名字
   await moveFilesToBundle(dir, bundles, bundleNames)
   
@@ -36,10 +39,12 @@ async function bundleFilesMain (options, dir) {
 
 function sortFiles (files) {
   let fileObjects = files.map(file => {
-    let ctime = fs.lstatSync(file).ctime
-//    if (file.endsWith('2016年的檔案.csv')) {
-//      ctime = dayjs('20160101').toDate()
-//    }
+    //console.log(file, fs.lstatSync(file))
+    let time = fs.lstatSync(file).mtime
+    
+    if (file.endsWith('2016年的檔案.csv')) {
+      time = dayjs('20160101').toDate()
+    }
     
     let parse = path.parse(file)
     
@@ -52,13 +57,13 @@ function sortFiles (files) {
       file,
       filename: parse.name,
       ext,
-      ctime,
-      ctimeUnix: ctime.getTime()
+      time,
+      timeUnix: time.getTime()
     }
   })
   
   fileObjects.sort((a, b) => {
-    return a.ctimeUnix - b.ctimeUnix
+    return a.timeUnix - b.timeUnix
   })
   
   return fileObjects
@@ -74,19 +79,19 @@ function createBundleOfFiles (fileObjects, bundleIntervalHours) {
   fileObjects.forEach(fileObject => {
     if (!lastCtimeUnix) {
       currentBundle.push(fileObject)
-      lastCtimeUnix = fileObject.ctimeUnix
+      lastCtimeUnix = fileObject.timeUnix
       return true
     }
     
-    //console.log(fileObject.ctimeUnix - lastCtimeUnix, intervalMS)
-    if (fileObject.ctimeUnix - lastCtimeUnix > intervalMS) {
+    //console.log(fileObject.time, fileObject.timeUnix - lastCtimeUnix, intervalMS)
+    if (fileObject.timeUnix - lastCtimeUnix > intervalMS) {
       bundles.push(currentBundle)
       
       currentBundle = []
     }
     
     currentBundle.push(fileObject)
-    lastCtimeUnix = fileObject.ctimeUnix
+    lastCtimeUnix = fileObject.timeUnix
   })
   
   if (currentBundle.length !== 0) {
@@ -98,8 +103,8 @@ function createBundleOfFiles (fileObjects, bundleIntervalHours) {
 
 function createBundleNames (bundles, dir, subdirs) {
   return bundles.map(bundle => {
-    let ctime = bundle[0].ctime
-    let dateString = dayjs(ctime).format('YYYYMMDD')
+    let time = bundle[0].time
+    let dateString = dayjs(time).format('YYYYMMDD')
     
     // 先確認看看有沒有跟這個日期一樣的子資料夾
     for (let i = 0; i < subdirs.length; i++) {
@@ -108,8 +113,23 @@ function createBundleNames (bundles, dir, subdirs) {
       }
     }
     
+    // ----------------
+    // 如果只有一個檔案，那就用這個檔案的檔案名稱
+    if (bundle.length === 1) {
+      let filename = bundle[0].filename
+      if (filename.startsWith(dateString)) {
+        filename = filename.slice(dateString.length).trim()
+        if (filename.length === 0) {
+          filename = bundle[0].filename
+        }
+      }
+      return dateString + ' ' + filename
+    }
+    
+    // ----------------
+    
     let filenameList = buildWeightedFilelist(bundle)
-    let keyword = extractKeywordsFromFilenameList(filenameList)
+    let keyword = extractKeywordsFromFilenameList(filenameList, 3, dateString)
     
     let bundleName = dateString + ' ' + keyword
     

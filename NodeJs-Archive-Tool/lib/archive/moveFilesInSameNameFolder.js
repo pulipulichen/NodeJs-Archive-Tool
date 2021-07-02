@@ -1,7 +1,9 @@
 const fs = require('fs')
 const path = require('path')
 
-function moveFilesInSameNameFolder(file) {
+const trash = require('trash')
+
+async function moveFilesInSameNameFolder(file) {
   
   //console.log(file, fs.existsSync(file), fs.lstatSync(file).isDirectory())
   
@@ -35,40 +37,45 @@ function moveFilesInSameNameFolder(file) {
       newName = newName + '.tmp'
     }
     fs.renameSync(oldName, newName)
-    fs.rmdirSync(file)
+    //fs.rmdirSync(file)
+    await trash(file)
+    
     fs.renameSync(newName, file)
     return true
   }
   
-  fs.readdirSync(file + '/' + filesInDir, { withFileTypes: true })
-    .map(fileInSubDir => {
-      let fileInSubDirName = fileInSubDir.name
-      
-      let oldName = file + '/' + filesInDir + '/' + fileInSubDirName
-      let newName = file + '/' + fileInSubDirName
-      
-      if (fs.existsSync(newName) === false) {
-        fs.renameSync(oldName, newName)
+  let list = fs.readdirSync(file + '/' + filesInDir, { withFileTypes: true })
+  for (let i = 0; i < list.length; i++) {
+    let fileInSubDir = list[i]
+    let fileInSubDirName = fileInSubDir.name
+
+    let oldName = file + '/' + filesInDir + '/' + fileInSubDirName
+    let newName = file + '/' + fileInSubDirName
+
+    if (fs.existsSync(newName) === false) {
+      fs.renameSync(oldName, newName)
+    }
+    else {
+      let newNameTemp = newName
+
+      while (fs.existsSync(newNameTemp)) {
+        newNameTemp = newNameTemp + '.tmp'
       }
-      else {
-        let newNameTemp = newName
 
-        while (fs.existsSync(newNameTemp)) {
-          newNameTemp = newNameTemp + '.tmp'
-        }
+      fs.renameSync(oldName, newNameTemp)
 
-        fs.renameSync(oldName, newNameTemp)
-
-        fs.rmdirSync(newName)
-        fs.renameSync(newNameTemp, newName)
-      }
-    })
+      //fs.rmdirSync(newName)
+      await trash(newName)
+      fs.renameSync(newNameTemp, newName)
+    }
+  }
   
   //console.log(file + '/' + filesInDir)
   if (fs.existsSync(file + '/' + filesInDir)
           && fs.readdirSync(file + '/' + filesInDir, { withFileTypes: true }).length === 0) {
     try {
-      fs.rmdirSync(file + '/' + filesInDir)
+      //fs.rmdirSync(file + '/' + filesInDir)
+      await trash(file + '/' + filesInDir)
     }
     catch (e) {}
   }

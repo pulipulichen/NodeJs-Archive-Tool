@@ -13,7 +13,7 @@ const get7zPath = require('./get7zPath.js')
 const sleep = require('./../await/sleep.js')
 
 let runFileArchiveCommand = async function (archiveFormat, file) {
-  while (archiveIsLocked(archiveFormat)) {
+  while (archiveIsLocked(archiveFormat, file)) {
     await sleep()
   }
   
@@ -44,6 +44,9 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
 }
 
 let runDirArchiveCommand = async function (archiveFormat, file) {
+  while (archiveIsLocked(archiveFormat, file)) {
+    await sleep()
+  }
   
   moveFilesInSameNameFolder(file)
   
@@ -64,7 +67,12 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   }
   //console.log(fileDir)
   //console.log(command)
+  
+  await archiveSetLock(archiveFormat, command)
+  
   await execShellCommand(command)
+  
+  archiveUnsetLock(archiveFormat)
   
   return outputFile
 }

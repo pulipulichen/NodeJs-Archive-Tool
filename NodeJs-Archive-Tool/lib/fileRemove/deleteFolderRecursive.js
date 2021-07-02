@@ -2,23 +2,28 @@ const fs = require('fs');
 const path = require('path');
 
 const sleep = require('./../await/sleep.js')
+const trash = require('trash')
 
 const deleteFolderRecursive = async function (directoryPath) {
   if (fs.existsSync(directoryPath)) {
-    fs.readdirSync(directoryPath).forEach((file, index) => {
-      const curPath = path.join(directoryPath, file);
+    let list = fs.readdirSync(directoryPath)
+    for (let index = 0; index < list.length; index++) {
+      let file = list[index]
+      let curPath = path.join(directoryPath, file);
       if (fs.lstatSync(curPath).isDirectory()) {
         // recurse
         deleteFolderRecursive(curPath);
       } else {
         // delete file
-        fs.unlinkSync(curPath);
+        //fs.unlinkSync(curPath);
+        await trash(curPath)
       }
-    });
+    };
     
     while (true) {
       try {
-        fs.rmdirSync(directoryPath);
+        //fs.rmdirSync(directoryPath);
+        await trash(directoryPath)
         break
       }
       catch (e) {

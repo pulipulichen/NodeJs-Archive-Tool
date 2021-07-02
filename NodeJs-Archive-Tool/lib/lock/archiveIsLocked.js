@@ -4,7 +4,7 @@ const archiveGetLockName = require('./archiveGetLockName.js')
 module.exports = function (archiveFormat, file) {
   let isLocked = fs.existsSync(archiveGetLockName(archiveFormat))
   
-  let lockIndicator = file + '.wait'
+  let lockIndicator = file + '.wait.txt'
   
   if (isLocked) {
     if (fs.existsSync(lockIndicator) === false) {

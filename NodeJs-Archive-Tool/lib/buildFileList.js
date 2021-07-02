@@ -1,4 +1,6 @@
 let fs = require('fs')
+let path = require('path')
+
 let getArgv = require('./cli/getArgv.js')
 let getFileAndDirFromFolder
 let getFileAttributes
@@ -18,6 +20,8 @@ let archiveSetLock
 let archiveUnsetLock
 
 let progressIndicator
+
+let trash
 
 function loadPackages () {
   
@@ -39,13 +43,16 @@ function loadPackages () {
   archiveUnsetLock = require('./lock/archiveUnsetLock.js')
 
   progressIndicator = require('./progressIndicator/progressIndicator.js')
+  
+  trash = require('trash')
 }
 
 module.exports = async function (options) {
   
   let { 
     format = 'csv',
-    compress = false
+    compress = false,
+    moveToFolder = false
   } = options
   
   let outputFile
@@ -91,7 +98,8 @@ module.exports = async function (options) {
       let targetFilePath
 
       if (fs.existsSync(targetFile)) {
-        fs.unlinkSync(targetFile)
+        //fs.unlinkSync(targetFile)
+        await trash(targetFile)
       }
 
       let fileHandler
@@ -141,7 +149,13 @@ module.exports = async function (options) {
         outputFile = await archiveFile(compress, targetFilePath)
         await removeFile(targetFilePath)
       }
-
+      
+      if (moveToFolder === true) {
+        let moveToFolderPath = file + '/' + path.basename(outputFile)
+        fs.renameSync(outputFile, moveToFolderPath)
+        outputFile = moveToFolderPath
+      }
+      
       archiveUnsetLock(lockKey)
     }
     catch (e) {

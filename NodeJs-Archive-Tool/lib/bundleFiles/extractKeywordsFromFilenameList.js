@@ -10,7 +10,7 @@ segment.useDefault();
 //segment.loadStopwordDict(path.resolve(__dirname, './stopword.txt'));
 
 
-function extractKeywordsFromFilenameList(list, top = 3) {
+function extractKeywordsFromFilenameList(list, top = 3, dateString) {
   let text = list.join(' ')
   
   let segmentResult = segment.doSegment(text, {
@@ -43,7 +43,10 @@ function extractKeywordsFromFilenameList(list, top = 3) {
   
   //console.log(freq)
   
-  return freq.map(w => w.word).slice(0, top).join(' ')
+  return freq.map(w => w.word)
+          .filter(w => (w !== dateString))
+          .slice(0, top)
+          .join(' ')
 }
 
 function isLatinString(s) {
@@ -61,6 +64,11 @@ function countFrequency(segmentResult) {
   let wordMap = {}
   
   segmentResult.forEach(({w}) => {
+    w = w.trim()
+    if (w.length === 0) {
+      return false
+    }
+    
     if (!wordMap[w]) {
       wordMap[w] = 0
     }
@@ -69,6 +77,7 @@ function countFrequency(segmentResult) {
   })
   
   let wordArray = Object.keys(wordMap).map(w => {
+    
     let wordLength = w.length
     //console.log(w, isEnglish.test(w))
     if (isEnglish.test(w)) {

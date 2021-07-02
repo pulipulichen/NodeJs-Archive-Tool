@@ -15,7 +15,7 @@ const get7zPath = require('./get7zPath.js')
 
 module.exports = async function (file) {
   let archiveFormat = 'extract'
-  while (archiveIsLocked(archiveFormat)) {
+  while (archiveIsLocked(archiveFormat, file)) {
     await sleep()
   }
   
