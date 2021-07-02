@@ -29,7 +29,7 @@ module.exports = async function (file) {
   
   process.chdir(fileDir) 
   
-  let command = `${get7zPath()} x "${file}" -o"${targetDirName}/"`
+  let command = `${get7zPath()} x -mmt=off "${file}" -o"${targetDirName}/"`
   //console.log(command)
   await archiveSetLock(archiveFormat, command)
   

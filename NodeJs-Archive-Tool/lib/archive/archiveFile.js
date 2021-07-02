@@ -26,11 +26,11 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   let outputFile = file
   if (archiveFormat === 'zip') {
     outputFile = outputFile + '.zip'
-    command = `${get7zPath()} a -tzip -mcu=on -mx=9 "${filename}.zip" "${filename}"`
+    command = `${get7zPath()} a -tzip -mmt=off -mcu=on -mx=9 "${filename}.zip" "${filename}"`
   }
   else if (archiveFormat === '7z') {
     outputFile = outputFile + '.7z'
-    command = `${get7zPath()} a -t7z -mx=9 "${filename}.7z" "${filename}"`
+    command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${filename}.7z" "${filename}"`
   }
   //console.log(fileDir)
   
@@ -59,11 +59,11 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   let outputFile = file
   if (archiveFormat === 'zip') {
     outputFile = outputFile + '.zip'
-    command = `${get7zPath()} a -tzip -mcu=on -mx=9 "../${filename}.zip" *`
+    command = `${get7zPath()} a -tzip -mmt=off -mcu=on -mx=9 "../${filename}.zip" *`
   }
   else if (archiveFormat === '7z') {
     outputFile = outputFile + '.7z'
-    command = `${get7zPath()} a -t7z -mx=9 "../${filename}.7z" *`
+    command = `${get7zPath()} a -t7z -mmt=off -mx=9 "../${filename}.7z" *`
   }
   //console.log(fileDir)
   //console.log(command)
