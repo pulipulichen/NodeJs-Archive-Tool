@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const trash = require('trash')
+const trash = require('./../fileRemove/trashFile.js')
 
 async function moveFilesInSameNameFolder(file) {
   
