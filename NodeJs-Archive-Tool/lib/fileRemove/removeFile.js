@@ -1,7 +1,7 @@
 const fs = require('fs')
 const deleteFolderRecursive = require('./deleteFolderRecursive.js')
 
-const trash = require('trash')
+const trash = require('./trashFile.js')
 
 module.exports = async function (file) {
   if (fs.existsSync(file) === false) {

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const sleep = require('./../await/sleep.js')
-const trash = require('trash')
+const trash = require('./../fileRemove/trashFile.js')
 
 const deleteFolderRecursive = async function (directoryPath) {
   if (fs.existsSync(directoryPath)) {

@@ -44,7 +44,7 @@ function loadPackages () {
 
   progressIndicator = require('./progressIndicator/progressIndicator.js')
   
-  trash = require('trash')
+  trash = require('./fileRemove/trashFile.js')
 }
 
 module.exports = async function (options) {
