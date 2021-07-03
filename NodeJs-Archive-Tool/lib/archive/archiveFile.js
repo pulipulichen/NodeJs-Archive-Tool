@@ -99,6 +99,7 @@ module.exports = async function (archiveFormat, file) {
   
   //console.log('開始睡')
   //await sleep(300 * 1000)
+  //throw Error('故意測試錯誤')
   
   let currentWordDirectory = __dirname
   try {
@@ -108,7 +109,7 @@ module.exports = async function (archiveFormat, file) {
   let outputPath
   if (fs.lstatSync(file).isDirectory()) {
     // 檢查裡面是否有檔案
-    if (isEmptyFolder(file)) {
+    if (await isEmptyFolder(file)) {
       throw Error('folder is empty.')
     }
     
