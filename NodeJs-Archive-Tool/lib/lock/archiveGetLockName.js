@@ -2,7 +2,15 @@
 
 const fs = require('fs')
 const os = require('os')
+const path = require('path')
 
-module.exports = function (archiveFormat, command) {
-  return os.tmpdir() + '/' + archiveFormat + '.lock.txt'
+function getBaseDir () {
+  //return os.tmpdir() + '/' + 
+  //return path.resolve(__dirname, '../../') + '/'
+  return path.resolve(__dirname, '../../')
+}
+
+module.exports = function (archiveFormat) {
+  //return getBaseDir() + archiveFormat + '.lock.txt'
+  return path.resolve(getBaseDir(), './lock.' + archiveFormat + '.txt')
 }

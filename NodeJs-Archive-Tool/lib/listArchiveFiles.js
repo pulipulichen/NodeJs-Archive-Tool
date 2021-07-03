@@ -7,10 +7,22 @@ let archiveFile
 let removeFile
 let extractArchive
 
+let archiveIsLocked
+let archiveSetLock
+let archiveUnsetLock
+
+let sleep
+
 function loadPackages () {
   archiveFile = require('./archive/archiveFile.js')
   removeFile = require('./fileRemove/removeFile.js')
   extractArchive = require('./archive/extractArchive.js')
+  
+  archiveIsLocked = require('./lock/archiveIsLocked.js')
+  archiveSetLock = require('./lock/archiveSetLock.js')
+  archiveUnsetLock = require('./lock/archiveUnsetLock.js')
+  
+  sleep = require('./await/sleep.js')
 }
 
 module.exports = async function (archiveFormat) {
@@ -29,6 +41,15 @@ module.exports = async function (archiveFormat) {
       if (fs.existsSync(file) === false) {
         continue
       }
+      
+      // --------------------
+      while (archiveIsLocked(archiveFormat, file)) {
+        await sleep()
+      }
+      
+      await archiveSetLock(archiveFormat, file)
+      
+      // -----------------------
 
       if (file.endsWith('.zip') 
               || file.endsWith('.7z')
@@ -55,6 +76,9 @@ module.exports = async function (archiveFormat) {
         await archiveFile(archiveFormat, file)
         await removeFile(file)
       }
+      
+      archiveUnsetLock(archiveFormat)
+      
     }
     catch (e) {
       var today = new Date();

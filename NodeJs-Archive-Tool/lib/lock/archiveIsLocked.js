@@ -6,16 +6,16 @@ module.exports = function (archiveFormat, file) {
   
   let lockIndicator = file + '.wait.txt'
   
-  console.log(isLocked, lockIndicator, isLocked)
+  //console.log(isLocked, lockIndicator, fs.existsSync(lockIndicator))
   if (isLocked) {
     if (fs.existsSync(lockIndicator) === false) {
       fs.writeFileSync(lockIndicator, '')
     }
   }
-  
-  if (fs.existsSync(lockIndicator)) {
-    fs.unlinkSync(lockIndicator)
+  else {
+    if (fs.existsSync(lockIndicator)) {
+      fs.unlinkSync(lockIndicator)
+    }
   }
-  
   return isLocked
 }

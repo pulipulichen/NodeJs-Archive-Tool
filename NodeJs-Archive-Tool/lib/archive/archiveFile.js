@@ -12,10 +12,12 @@ const moveFilesInSameNameFolder = require('./moveFilesInSameNameFolder.js')
 const get7zPath = require('./get7zPath.js')
 const sleep = require('./../await/sleep.js')
 
+const isEmptyFolder = require('./../fileList/isEmptyFolder.js')
+
 let runFileArchiveCommand = async function (archiveFormat, file) {
-  while (archiveIsLocked(archiveFormat, file)) {
-    await sleep()
-  }
+//  while (archiveIsLocked(archiveFormat, file)) {
+//    await sleep()
+//  }
   
   let filename = path.basename(file)
   let fileDir = path.dirname(file)
@@ -34,19 +36,19 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   }
   //console.log(fileDir)
   
-  await archiveSetLock(archiveFormat, command)
+  //await archiveSetLock(archiveFormat, command)
   
   await execShellCommand(command)
   
-  archiveUnsetLock(archiveFormat)
+  //archiveUnsetLock(archiveFormat)
   
   return outputFile
 }
 
 let runDirArchiveCommand = async function (archiveFormat, file) {
-  while (archiveIsLocked(archiveFormat, file)) {
-    await sleep()
-  }
+//  while (archiveIsLocked(archiveFormat, file)) {
+//    await sleep()
+//  }
   
   moveFilesInSameNameFolder(file)
   
@@ -68,11 +70,11 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   //console.log(fileDir)
   //console.log(command)
   
-  await archiveSetLock(archiveFormat, command)
+  //await archiveSetLock(archiveFormat, command)
   
   await execShellCommand(command)
   
-  archiveUnsetLock(archiveFormat)
+  //archiveUnsetLock(archiveFormat)
   
   return outputFile
 }
@@ -95,6 +97,9 @@ module.exports = async function (archiveFormat, file) {
   
   // --------------------
   
+  //console.log('開始睡')
+  //await sleep(300 * 1000)
+  
   let currentWordDirectory = __dirname
   try {
     currentWordDirectory = process.cwd()
@@ -102,6 +107,11 @@ module.exports = async function (archiveFormat, file) {
   
   let outputPath
   if (fs.lstatSync(file).isDirectory()) {
+    // 檢查裡面是否有檔案
+    if (isEmptyFolder(file)) {
+      throw Error('folder is empty.')
+    }
+    
     //console.log('a')
     outputPath = await runDirArchiveCommand(archiveFormat, file)
   }
