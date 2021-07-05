@@ -22,11 +22,16 @@ let removeFile
 
 let buildFileList
 let listArchiveFiles
+let getFilesInDirectory
 
 function loadPackages () {
+  //console.log('有載入嗎？')
+  
   getFileAndDirFromFolder = require('./fileList/getFileAndDirFromFolder.js')
   getFileAttributes = require('./fileAttributes/getFileAttributes.js')
-
+  
+  getFilesInDirectory = require('./fileList/getFilesInDirectory.js')
+  
   sleep = require('./await/sleep.js')
 
   addFileListRowCSV = require('./buildList/addFileListRowCSV.js')
@@ -52,7 +57,7 @@ module.exports = async function (options = {}) {
   await handleFileFromArgv({
     lockKey: 'build-list-archive',
     validateDirectory: true,
-    loadPackages
+    loadPackages: loadPackages
   }, async (file) => {
     
     let list = await buildFileList(options)
@@ -62,12 +67,16 @@ module.exports = async function (options = {}) {
     //console.log(' ')
     
     //await removeFile(file)
-    let filesInDir = await getFileAndDirFromFolder(file)
-    await Promise.all(filesInDir.map(async (f) => {
-      await removeFile(f)
-    }))
+    let filesInDir = await getFilesInDirectory(file)
+    //console.log(filesInDir)
+    if (filesInDir.length > 0) {
+      await Promise.all(filesInDir.map(async (f) => {
+        await removeFile(f)
+      }))
+    }
 
     //console.log('prepare to mkdir:', file)
+    /*
     let notPassed = true
     while (notPassed) {
       try {
@@ -77,6 +86,7 @@ module.exports = async function (options = {}) {
         await sleep(500)
       }
     }
+    */
     fs.renameSync(list, file + '/' + path.basename(list))
     fs.renameSync(archive, file + '/' + path.basename(archive))
   })

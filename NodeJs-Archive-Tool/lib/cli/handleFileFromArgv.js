@@ -20,7 +20,7 @@ module.exports = async function (options = {}, callback) {
   let {
     lockKey = 'main',
     validateDirectory = false,
-    loadPacakges
+    loadPackages
   } = options
   
   let isPacakgesLoaded = false
@@ -40,9 +40,11 @@ module.exports = async function (options = {}, callback) {
         throw Error(file + ' should be a directory.')
       }
       
+      //console.log(typeof(loadPackages), isPacakgesLoaded)
+      
       if (isPacakgesLoaded === false 
-              && typeof(loadPacakges) === 'function') {
-        loadPacakges()
+              && typeof(loadPackages) === 'function') {
+        loadPackages()
         isPacakgesLoaded = true
       }
       

@@ -51,6 +51,9 @@ module.exports = async function (options = {}) {
     moveToFolder = false
   } = options
   
+  let lastStatus
+  let outputFile
+  
   await handleFileFromArgv({
     lockKey: 'build-list',
     validateDirectory: true,
@@ -127,6 +130,8 @@ module.exports = async function (options = {}) {
       outputFile = moveToFolderPath
     }
   })
+  
+  return outputFile
 }
 
 
