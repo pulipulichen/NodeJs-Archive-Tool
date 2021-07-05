@@ -8,7 +8,7 @@ For $i = 1 To $CmdLine[0]
 	  Local $f = $CmdLine[$i]
 	  ;$fileList = $fileList & ' "' & $f & '"'
 
-      RunWait('node ../../file-list.js "' & $f & '"', "", @SW_HIDE)
+      RunWait('node ../../file-fulltext-list.js "' & $f & '"', "", @SW_HIDE)
    EndIf
 Next
 

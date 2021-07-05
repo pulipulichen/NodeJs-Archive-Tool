@@ -2,18 +2,18 @@ const Database = require('better-sqlite3');
 const dayjs = require('dayjs')
 const fs = require('fs')
 
-function main (attrs, targetFile, dbHandler) {
+function main (attrs, targetFile, handlers = {}) {
   //console.log(attrs)
   
   targetFile = targetFile + '.sqlite'
-  if (!dbHandler) {
-    dbHandler = buildDBHandler(attrs, targetFile)
+  if (!handlers || !handlers.dbHandler) {
+    handlers = buildDBHandler(attrs, targetFile)
   }
   
-  dbHandler(cleanAttrs(attrs))
+  handlers.dbHandler(cleanAttrs(attrs))
   
   return {
-    fileHandler: dbHandler,
+    handlers,
     targetFilePath: targetFile
   }
 }
@@ -37,7 +37,14 @@ function buildDBHandler (attrs, targetFile) {
     insert.run(attr);
   });
   
-  return insertHandler
+  const closeHandler = () => {
+    db.close()
+  }
+  
+  return {
+    dbHandler: insertHandler,
+    closeHandler
+  }
 }
 
 /**

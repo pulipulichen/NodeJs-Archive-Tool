@@ -102,7 +102,7 @@ module.exports = async function (options) {
         await trash(targetFile)
       }
 
-      let fileHandler
+      let handlers
 
       lastStatus = await progressIndicator(file, 0, fileList.length, lastStatus)
 
@@ -124,8 +124,8 @@ module.exports = async function (options) {
           }
         }
         else if (format === 'sqlite') {
-          let result = await addFileListRowSQLite(attrs, targetFile, fileHandler)
-          fileHandler = result.fileHandler
+          let result = await addFileListRowSQLite(attrs, targetFile, handlers)
+          handlers = result.handlers
           targetFilePath = result.targetFilePath
         }
         //await sleep(10000)
@@ -133,6 +133,10 @@ module.exports = async function (options) {
         lastStatus = await progressIndicator(file, (listLen - j), listLen, lastStatus)
 
       } // for (let listLen = fileList.length, j = listLen; j > 0; j--) {
+
+      if (handlers && handlers.closeHandler) {
+        handlers.closeHandler()
+      }
 
       if (lastStatus 
               && lastStatus.indicatorFileName 
