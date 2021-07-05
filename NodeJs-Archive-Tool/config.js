@@ -17,7 +17,11 @@ module.exports = {
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       'application/vnd.ms-excel',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/rtf'
+      'application/rtf',
+      'multipart/related',
+      'application/x-mimearchive',
+      '.mht',
+      '.mhtml'
     ],
   }
 }
