@@ -42,7 +42,7 @@ function loadPackages () {
   archiveFile = require('./archive/archiveFile.js')
   removeFile = require('./fileRemove/removeFile.js')
 
-  buildFileList = require('./buildFileList.js')
+  buildListMain = require('./buildList/buildListMain.js')
   listArchiveFiles = require('./listArchiveFiles.js')
 }
 
@@ -60,14 +60,35 @@ module.exports = async function (options = {}) {
     loadPackages: loadPackages
   }, async (file) => {
     
-    let list = await buildFileList(options)
+    // 要排除掉已經處理過的檔案
+    let filesInDir = await getFilesInDirectory(file)
+    if (filesInDir.length === 2) {
+      let hasArchive = false
+      let hasList = false
+      filesInDir.forEach(f => {
+        if (f.endsWith('.' + format)) {
+          hasList = true
+        }
+        else if (f.endsWith('.' + archiveFormat)) {
+          hasArchive = true
+        }
+      })
+      if (hasArchive && hasList) {
+        // 確認已經有檔案了
+        return true
+      }
+    }
+    
+    // --------------------------------
+    
+    let list = await buildListMain(file, options)
     //console.log('[[[LIST]]]', list, file)
     let archive = await archiveFile(archiveFormat, file)
     //console.log('[[[archive]]]', archive)
     //console.log(' ')
     
     //await removeFile(file)
-    let filesInDir = await getFilesInDirectory(file)
+    filesInDir = await getFilesInDirectory(file)
     //console.log(filesInDir)
     if (filesInDir.length > 0) {
       await Promise.all(filesInDir.map(async (f) => {

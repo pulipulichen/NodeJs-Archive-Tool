@@ -27,6 +27,7 @@ async function progressIndicator(file, i, len, lastStatus = {}) {
   }
   else {
     while (!fs.existsSync(lastStatus.indicatorFileName)) {
+      //console.log('沒有嗎？')
       await sleep(1000)
     }
     

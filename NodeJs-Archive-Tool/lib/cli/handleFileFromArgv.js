@@ -25,14 +25,17 @@ module.exports = async function (options = {}, callback) {
   
   let isPacakgesLoaded = false
   
-  for (let len = output.length, i = len; i > 0; i--) {
-  //await Promise.all(output.map(async (file) => {
-    let file = output[(len - i)]
+  //for (let len = output.length, i = len; i > 0; i--) {
+  await Promise.all(output.map(async (file) => {
+    //let file = output[(len - i)]
     
     try {
+      //console.log('[現在處理]', file)
+      
       if (fs.existsSync(file) === false) {
         //return continue
         return false
+        //continue
       }
       
       if (validateDirectory === true 
@@ -65,6 +68,7 @@ module.exports = async function (options = {}, callback) {
       
       // ---------------------------
 
+      //console.log('[解除lock]', file)
       if (lockKey !== false) {
         archiveUnsetLock(lockKey)
       }
@@ -73,6 +77,9 @@ module.exports = async function (options = {}, callback) {
       let errorKey = lockKey
       if (errorKey !== false) {
         errorKey = '-' + errorKey
+      }
+      else {
+        errorKey = ''
       }
       
       var today = new Date();
@@ -85,8 +92,8 @@ module.exports = async function (options = {}, callback) {
     
     
     // --------------------------
-  } // for (let len = output.length, i = len; i > 0; i--) {
-  //})) // await Promise.all(output.map(async (file) => {
+  //} // for (let len = output.length, i = len; i > 0; i--) {
+  })) // await Promise.all(output.map(async (file) => {
 
   return outputFile
 }

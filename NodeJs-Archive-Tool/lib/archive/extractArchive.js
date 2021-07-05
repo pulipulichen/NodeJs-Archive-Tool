@@ -23,13 +23,20 @@ module.exports = async function (file) {
   try {
     currentWordDirectory = process.cwd()
   } catch (e) {}
-  
-  let targetDirName = path.parse(file).name
   let fileDir = path.dirname(file)
   
   process.chdir(fileDir) 
   
-  let command = `${get7zPath()} x -mmt=off "${file}" -o"${targetDirName}/"`
+  let targetDirName = path.parse(file).name
+  let command 
+  
+  //throw Error(targetDirName + ';' + path.basename(path.dirname(file)))
+  if (targetDirName !== path.basename(path.dirname(file))) {
+    command = `${get7zPath()} x -mmt=off "${file}" -o"${targetDirName}/"`
+  }
+  else {
+    command = `${get7zPath()} x -mmt=off "${file}"`
+  }
   //console.log(command)
   await archiveSetLock(archiveFormat, command)
   
