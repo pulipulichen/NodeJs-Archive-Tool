@@ -70,8 +70,8 @@ module.exports = async function (file, options = {}) {
       handlers = result.handlers
       targetFilePath = result.targetFilePath
     }
-    console.log('清單整理睡覺中', f)
-    await sleep(1000)
+    //console.log('清單整理睡覺中', f)
+    //await sleep(1000)
 
     lastStatus = await progressIndicator(file, (listLen - j), listLen, lastStatus)
 
