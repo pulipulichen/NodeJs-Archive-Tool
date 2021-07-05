@@ -25,9 +25,9 @@ module.exports = async function (options = {}, callback) {
   
   let isPacakgesLoaded = false
   
-  //for (let len = output.length, i = len; i > 0; i--) {
-  await Promise.all(output.map(async (file) => {
-    //let file = output[(len - i)]
+  for (let len = output.length, i = len; i > 0; i--) {
+  //await Promise.all(output.map(async (file) => {
+    let file = output[(len - i)]
     
     try {
       if (fs.existsSync(file) === false) {
@@ -50,12 +50,14 @@ module.exports = async function (options = {}, callback) {
       
       // --------------------------
 
-      while (archiveIsLocked(lockKey, file)) {
-        //console.log('locked', lockKey, file)
-        await sleep()
+      if (lockKey !== false) {
+        while (archiveIsLocked(lockKey, file)) {
+          //console.log('locked', lockKey, file)
+          await sleep()
+        }
+        
+        await archiveSetLock(lockKey, file)
       }
-
-      await archiveSetLock(lockKey, file)
 
       // --------------------------
 
@@ -63,12 +65,19 @@ module.exports = async function (options = {}, callback) {
       
       // ---------------------------
 
-      archiveUnsetLock(lockKey)
+      if (lockKey !== false) {
+        archiveUnsetLock(lockKey)
+      }
     }
     catch (e) {
+      let errorKey = lockKey
+      if (errorKey !== false) {
+        errorKey = '-' + errorKey
+      }
+      
       var today = new Date();
       var time = today.getHours() + '' + today.getMinutes()
-      fs.writeFileSync(file + '-' + lockKey + '-' + time + '.error.txt', e.stack)
+      fs.writeFileSync(file + errorKey + '-' + time + '.error.txt', e.stack)
       archiveUnsetLock(lockKey)
       
       throw e
@@ -76,7 +85,8 @@ module.exports = async function (options = {}, callback) {
     
     
     // --------------------------
-  })) // for (let len = output.length, i = len; i > 0; i--) {
+  } // for (let len = output.length, i = len; i > 0; i--) {
+  //})) // await Promise.all(output.map(async (file) => {
 
   return outputFile
 }

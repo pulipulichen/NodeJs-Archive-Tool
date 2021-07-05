@@ -1,6 +1,5 @@
 #pragma compile(Icon, '../../assets/icon/file-list-archive.ico')
 
-
 FileChangeDir(@ScriptDir)
 
 Local $jsFilename = "file-list-archive"

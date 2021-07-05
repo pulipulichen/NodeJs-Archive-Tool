@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 const dayjs = require('dayjs')
+const sleep = require('./../await/sleep.js')
 
 async function progressIndicator(file, i, len, lastStatus = {}) {
   

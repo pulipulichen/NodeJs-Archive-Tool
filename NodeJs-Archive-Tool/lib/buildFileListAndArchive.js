@@ -55,7 +55,7 @@ module.exports = async function (options = {}) {
   } = options
   
   await handleFileFromArgv({
-    lockKey: 'build-list-archive',
+    lockKey: false,
     validateDirectory: true,
     loadPackages: loadPackages
   }, async (file) => {

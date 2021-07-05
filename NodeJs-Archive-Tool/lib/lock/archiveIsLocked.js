@@ -3,10 +3,10 @@ const archiveGetLockName = require('./archiveGetLockName.js')
 
 module.exports = function (archiveFormat, file) {
   let lockFile = archiveGetLockName(archiveFormat)
-  console.log(lockFile)
+  //console.log(lockFile)
   let isLocked = fs.existsSync(lockFile)
   
-  let lockIndicator = file + '.wait.txt'
+  let lockIndicator = file + '-' + archiveFormat + '.wait.txt'
   
   //console.log(isLocked, lockIndicator, fs.existsSync(lockIndicator))
   if (isLocked) {
