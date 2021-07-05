@@ -1,16 +1,9 @@
-let fs = require('fs')
-let getArgv = require('./cli/getArgv.js')
+const handleFileFromArgv = require('./cli/handleFileFromArgv.js')
+const fs = require('fs')
 
 // --------------------------
 
 let bundleFilesMain
-
-const archiveIsLocked = require('./lock/archiveIsLocked.js')
-const archiveSetLock = require('./lock/archiveSetLock.js')
-const archiveUnsetLock = require('./lock/archiveUnsetLock.js')
-  
-const sleep = require('./await/sleep.js')
-
 
 function loadPackages () {
   bundleFilesMain = require('./bundleFiles/bundleFilesMain.js')
@@ -18,61 +11,20 @@ function loadPackages () {
 
 // ---------------
 
+
 module.exports = async function (options) {
-  
-  let outputFile
-  
-  let output = getArgv()
-  
-  let lockKey = 'build-list'
-  
-  for (let len = output.length, i = len; i > 0; i--) {
-    let file = output[(len - i)]
-    
-    try {
-      
-      if (!bundleFilesMain) {
-        loadPackages()
-      }
-      
-      //console.log(file, fs.existsSync(file))
-
-      if (fs.existsSync(file) === false) {
-        continue
-      }
-      
-      if (fs.lstatSync(file).isDirectory() === false) {
-        throw Error(file + ' should be a directory.')
-      }
-
-      // --------------------------
-
-      while (archiveIsLocked(lockKey)) {
-        await sleep()
-      }
-
-      await archiveSetLock(lockKey, file)
-
-      // --------------------------
-
-      await bundleFilesMain(options, file)
-      
-      // ---------------------------
-
-      archiveUnsetLock(lockKey)
+  await handleFileFromArgv({
+    lockKey: 'build-list'
+  }, async (file) => {
+    if (!bundleFilesMain) {
+      loadPackages()
     }
-    catch (e) {
-      var today = new Date();
-      var time = today.getHours() + '' + today.getMinutes()
-      fs.writeFileSync(file + '-' + lockKey + '-' + time + '.error.txt', e.stack)
-      archiveUnsetLock(lockKey)
-      
-      throw e
-    } 
     
+    if (fs.lstatSync(file).isDirectory() === false) {
+      throw Error(file + ' should be a directory.')
+    }
     
-    // --------------------------
-  } // for (let len = output.length, i = len; i > 0; i--) {
-
-  return outputFile
+    await bundleFilesMain(options, file)
+    
+  })
 }

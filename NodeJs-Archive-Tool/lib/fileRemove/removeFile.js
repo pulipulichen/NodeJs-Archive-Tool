@@ -8,6 +8,7 @@ module.exports = async function (file) {
     return false
   }
   
+  /*
   if (fs.lstatSync(file).isDirectory()) {
     deleteFolderRecursive(file)
   }
@@ -15,5 +16,7 @@ module.exports = async function (file) {
     //fs.unlinkSync(file)
     await trash(file)
   }
+  */
+  await trash(file)
   return true
 }
