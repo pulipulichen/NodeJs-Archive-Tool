@@ -6,5 +6,11 @@ BASEDIR=$(dirname "$0")
 cd "$BASEDIR"
 cd ..
 cd ..
-node file-list-archive.js "$1"
+
+old="$IFS"
+IFS=';'
+str="'$*'"
+node file-list-archive.js "$str"
+IFS=$old
+
 cd $_mydir

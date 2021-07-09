@@ -7,8 +7,24 @@ module.exports = function () {
       return false
     }
     //console.log(index + ': ' + val);
-    output.push(val)
+    if (val.startsWith("'")) {
+      val = val.slice(1)
+    }
+    if (val.endsWith("'")) {
+      val = val.slice(0, -1)
+    }
+    
+    if (val.indexOf(';') === -1) {
+      output.push(val)
+    }
+    else {
+      val.split(';').forEach(v => {
+        output.push(v)
+      }) 
+    }
   })
+  
+  console.log(output)
   
   return output
 }

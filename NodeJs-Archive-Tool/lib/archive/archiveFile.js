@@ -97,8 +97,8 @@ module.exports = async function (archiveFormat, file) {
   
   // --------------------
   
-  console.log('開始睡')
-  await sleep(300 * 1000)
+  //console.log('開始睡')
+  //await sleep(30 * 1000)
   //throw Error('故意測試錯誤')
   
   let currentWordDirectory = __dirname
