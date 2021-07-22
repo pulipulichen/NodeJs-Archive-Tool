@@ -14,6 +14,8 @@ const sleep = require('./../await/sleep.js')
 
 const isEmptyFolder = require('./../fileList/isEmptyFolder.js')
 
+const os = require('os')
+
 let runFileArchiveCommand = async function (archiveFormat, file) {
 //  while (archiveIsLocked(archiveFormat, file)) {
 //    await sleep()
@@ -25,20 +27,31 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   process.chdir(fileDir)
   let command
   
+  let tmpPath = os.tmpdir() + '/'
+  let targetPath
+  
   let outputFile = file
   if (archiveFormat === 'zip') {
     outputFile = outputFile + '.zip'
-    command = `${get7zPath()} a -tzip -mmt=off -mcu=on -mx=9 "${filename}.zip" "${filename}"`
+    targetPath = filename + '.zip'
+    //tmpPath = tmpPath + outputFile
   }
   else if (archiveFormat === '7z') {
     outputFile = outputFile + '.7z'
-    command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${filename}.7z" "${filename}"`
+    targetPath = filename + '.7z'
   }
+  
+  tmpPath = tmpPath + outputFile
+  command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${tmpPath}" "${filename}"`
+  
   //console.log(fileDir)
   
   //await archiveSetLock(archiveFormat, command)
   
   await execShellCommand(command)
+  
+  // 移動檔案
+  fs.renameSync(tmpPath, targetPath)
   
   //archiveUnsetLock(archiveFormat)
   
@@ -58,21 +71,35 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   process.chdir(fileDir)
   let command
   
+  
+  let tmpPath = os.tmpdir() + '/'
+  let targetPath
+  
   let outputFile = file
   if (archiveFormat === 'zip') {
     outputFile = outputFile + '.zip'
-    command = `${get7zPath()} a -tzip -mmt=off -mcu=on -mx=9 "../${filename}.zip" *`
+    //command = `${get7zPath()} a -tzip -mmt=off -mcu=on -mx=9 "../${filename}.zip" *`
+    
   }
   else if (archiveFormat === '7z') {
     outputFile = outputFile + '.7z'
-    command = `${get7zPath()} a -t7z -mmt=off -mx=9 "../${filename}.7z" *`
+    //command = `${get7zPath()} a -t7z -mmt=off -mx=9 "../${filename}.7z" *`
   }
+  
+  targetPath = path.resolve("../" + filename + '.' + archiveFormat)
+  tmpPath = tmpPath + filename + '.' + archiveFormat
+  
+  command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${tmpPath}" *`
+  //throw Error(command + '\n' + os.tmpdir())
   //console.log(fileDir)
   //console.log(command)
   
   //await archiveSetLock(archiveFormat, command)
   
   await execShellCommand(command)
+  
+  // 移動檔案
+  fs.renameSync(tmpPath, targetPath)
   
   //archiveUnsetLock(archiveFormat)
   
