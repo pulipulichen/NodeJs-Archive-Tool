@@ -17,6 +17,8 @@ const removeFile = require('./../fileRemove/removeFile.js')
 
 const sleep = require('./../await/sleep.js')
 
+const os = require('os')
+
 module.exports = async function (file, options = {}) {
 
   let fileList = await getFileAndDirFromFolder(file)
@@ -33,12 +35,14 @@ module.exports = async function (file, options = {}) {
 
   let targetFile = file + '_' + dayjs(stats.ctime).format('YYYYMMDD-hhmm') + '.list'
   let targetFilePath
-
-  if (fs.existsSync(targetFile)) {
-    //fs.unlinkSync(targetFile)
-    await trash(targetFile)
-  }
   
+  let tmpFile = os.tmpdir() + '/' + path.basename(file) + '_' + dayjs(stats.ctime).format('YYYYMMDD-hhmm') + '.list'
+  let tmpFilePath
+
+  if (fs.existsSync(tmpFile)) {
+    //fs.unlinkSync(targetFile)
+    await trash(tmpFile)
+  }
   //console.log('buildListMain', 2)
 
   let handlers
@@ -59,16 +63,16 @@ module.exports = async function (file, options = {}) {
     //console.log(attrs)
 
     if (format === 'csv') {
-      let result = await addFileListRowCSV(attrs, targetFile)
+      let result = await addFileListRowCSV(attrs, tmpFile)
       //console.log(result)
       if (result) {
-        targetFilePath = result
+        tmpFilePath = result
       }
     }
     else if (format === 'sqlite') {
-      let result = await addFileListRowSQLite(attrs, targetFile, handlers)
+      let result = await addFileListRowSQLite(attrs, tmpFile, handlers)
       handlers = result.handlers
-      targetFilePath = result.targetFilePath
+      tmpFilePath = result.targetFilePath
     }
     //console.log('清單整理睡覺中', f)
     //await sleep(1000)
@@ -77,27 +81,42 @@ module.exports = async function (file, options = {}) {
 
   } // for (let listLen = fileList.length, j = listLen; j > 0; j--) {
 
+
+  // --------------------------
+
   if (handlers && handlers.closeHandler) {
     handlers.closeHandler()
   }
   
-  //console.log('buildListMain', 3.6, targetFilePath)
-
-  if (lastStatus 
-          && lastStatus.indicatorFileName 
-          && fs.existsSync(lastStatus.indicatorFileName)) {
-    fs.unlinkSync(lastStatus.indicatorFileName)
+  // -----------------------------
+  
+  //console.log(compress, targetFilePath)
+  outputFile = tmpFilePath
+  if (compress !== false) {
+    tmpFilePath = await archiveFile(compress, tmpFilePath)
+    await removeFile(targetFilePath)
   }
+  
+  // --------------------------
+  
+  if (fs.existsSync(targetFile)) {
+    //fs.unlinkSync(targetFile)
+    await trash(targetFile)
+  }
+  
+  //fs.renameSync(tmpFile, targetFile)
+  targetFilePath = path.dirname(targetFile) + '/' + path.basename(tmpFilePath)
+  fs.renameSync(tmpFilePath, targetFilePath)
+  
+  outputFile = targetFilePath
+  
+  // -----------------------------
+  
+  //console.log('buildListMain', 3.6, targetFilePath)
 
   //console.log(fileList)
   //console.log(targetFilePath)
 
-  //console.log(compress, targetFilePath)
-  outputFile = targetFilePath
-  if (compress !== false) {
-    outputFile = await archiveFile(compress, targetFilePath)
-    await removeFile(targetFilePath)
-  }
 
   if (moveToFolder === true) {
     let moveToFolderPath = file + '/' + path.basename(outputFile)
@@ -105,6 +124,14 @@ module.exports = async function (file, options = {}) {
     outputFile = moveToFolderPath
   }
   
+  // -------------------
+  
+  if (lastStatus 
+          && lastStatus.indicatorFileName 
+          && fs.existsSync(lastStatus.indicatorFileName)) {
+    fs.unlinkSync(lastStatus.indicatorFileName)
+  }
+
   //console.log('buildListMain', 9)
   
   return outputFile
