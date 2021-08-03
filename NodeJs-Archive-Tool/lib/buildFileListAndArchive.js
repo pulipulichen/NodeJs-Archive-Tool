@@ -83,12 +83,11 @@ module.exports = async function (options = {}) {
     
     // --------------------------------
     
-    console.log('gogogo')
+    //console.log('gogogo')
     
     let list = await buildListMain(file, options)
     
-    console.log('[[[LIST]]]', list, file)
-    
+    //console.log('[[[LIST]]]', list, file)
     
     let archive = await archiveFile(archiveFormat, file)
     //console.log('[[[archive]]]', archive)

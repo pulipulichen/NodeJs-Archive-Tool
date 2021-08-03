@@ -4,5 +4,5 @@ buildFileListAndArchive({
   fulltext: false,
   format: 'csv',
   archiveFormat: '7z',
-  moveToFolder: true
+  moveToFolder: false
 })
