@@ -34,6 +34,7 @@ module.exports = async function (options = {}, callback) {
       
       if (fs.existsSync(file) === false) {
         //return continue
+        //console.log('file not found: ' + file)
         return false
         //continue
       }

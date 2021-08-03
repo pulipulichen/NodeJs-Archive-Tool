@@ -42,7 +42,7 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   }
   
   tmpPath = tmpPath + outputFile
-  if (os.platform() === 'win32') {
+  if (os.platform() === 'win32' || true) {
     tmpPath = path.dirname(outputFile) + '/' + filename + '.' + archiveFormat
   }
   command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${tmpPath}" "${filename}"`
@@ -54,7 +54,7 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   await execShellCommand(command)
   
   // 移動檔案
-  if (os.platform() !== 'win32') {
+  if (os.platform() !== 'win32' && false) {
     fs.renameSync(tmpPath, targetPath)
   }
   
@@ -93,7 +93,7 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   
   targetPath = path.resolve("../" + filename + '.' + archiveFormat)
   tmpPath = tmpPath + filename + '.' + archiveFormat
-  if (os.platform() === 'win32') {
+  if (os.platform() === 'win32' || true) {
     tmpPath = targetPath
   }
   
@@ -107,7 +107,7 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
   await execShellCommand(command)
   
   // 移動檔案
-  if (os.platform() !== 'win32') {
+  if (os.platform() !== 'win32' && false) {
     fs.renameSync(tmpPath, targetPath)
   }
   

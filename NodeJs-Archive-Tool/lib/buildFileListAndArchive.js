@@ -60,6 +60,8 @@ module.exports = async function (options = {}) {
     loadPackages: loadPackages
   }, async (file) => {
     
+    //console.log(file)
+    
     // 要排除掉已經處理過的檔案
     let filesInDir = await getFilesInDirectory(file)
     if (filesInDir.length === 2) {
@@ -81,8 +83,13 @@ module.exports = async function (options = {}) {
     
     // --------------------------------
     
+    console.log('gogogo')
+    
     let list = await buildListMain(file, options)
-    //console.log('[[[LIST]]]', list, file)
+    
+    console.log('[[[LIST]]]', list, file)
+    
+    
     let archive = await archiveFile(archiveFormat, file)
     //console.log('[[[archive]]]', archive)
     //console.log(' ')

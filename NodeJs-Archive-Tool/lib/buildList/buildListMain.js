@@ -18,6 +18,7 @@ const removeFile = require('./../fileRemove/removeFile.js')
 const sleep = require('./../await/sleep.js')
 
 const os = require('os')
+const mv = require('mv');
 
 module.exports = async function (file, options = {}) {
 
@@ -106,7 +107,10 @@ module.exports = async function (file, options = {}) {
   
   //fs.renameSync(tmpFile, targetFile)
   targetFilePath = path.dirname(targetFile) + '/' + path.basename(tmpFilePath)
-  fs.renameSync(tmpFilePath, targetFilePath)
+  //fs.renameSync(tmpFilePath, targetFilePath)
+  mv(tmpFilePath, targetFilePath, (err) => {
+    throw err
+  })
   
   outputFile = targetFilePath
   
@@ -117,10 +121,14 @@ module.exports = async function (file, options = {}) {
   //console.log(fileList)
   //console.log(targetFilePath)
 
+  //throw Error('move to folder: ' + moveToFolder)
 
   if (moveToFolder === true) {
     let moveToFolderPath = file + '/' + path.basename(outputFile)
-    fs.renameSync(outputFile, moveToFolderPath)
+    //throw moveToFolder
+    mv(outputFile, moveToFolderPath, (err) => {
+      throw err
+    })
     outputFile = moveToFolderPath
   }
   
