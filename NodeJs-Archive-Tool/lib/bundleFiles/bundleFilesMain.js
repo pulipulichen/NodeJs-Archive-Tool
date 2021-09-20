@@ -50,7 +50,10 @@ function sortFiles (files) {
     let time = fs.lstatSync(file).mtime
     
     if (file.endsWith('2016年的檔案.csv')) {
-      time = dayjs('20160101').toDate()
+      let tmpTime = dayjs('20160101').toDate()
+      if (dayjs(time).fiff(tmpTime, 'year') < 30) {
+        time = tmpTime
+      }
     }
     
     /**
@@ -64,16 +67,40 @@ if (f.match(/^\d/)) {
     let basename = path.basename(file)
     if (/^\d{8}/.test(basename)) {
       let dateString = basename.slice(0, 8)
+      //console.log(dateString)
       try {
-        time = dayjs(dateString).toDate()
+        let tmpTime = dayjs(dateString).toDate()
+        //console.log(dayjs(time).diff(tmpTime, 'year'))
+        if (dayjs(time).diff(tmpTime, 'year') < 30) {
+          time = tmpTime
+        }
       }
-      catch (e) {}
+      catch (e) {
+        console.error(e)
+      }
     }
     else if (basename.startsWith('Screenshot_') 
             && /^\d{8}/.test(basename.slice(11))) {
       let dateString = basename.slice(11, 19)
       try {
-        time = dayjs(dateString).toDate()
+        let tmpTime = dayjs(dateString).toDate()
+        if (dayjs(time).diff(tmpTime, 'year') < 30) {
+          time = tmpTime
+        }
+      }
+      catch (e) {
+        console.error(e)
+      }
+    }
+    else if (basename.startsWith('IMG_') 
+            && /^\d{8}/.test(basename.slice(4))) {
+      // IMG_20210222_022912.jpg
+      let dateString = basename.slice(4, 12)
+      try {
+        let tmpTime = dayjs(dateString).toDate()
+        if (dayjs(time).fiff(tmpTime, 'year') < 30) {
+          time = tmpTime
+        }
       }
       catch (e) {}
     }
@@ -162,6 +189,13 @@ function createBundleNames (bundles, dir, subdirs) {
     
     let filenameList = buildWeightedFilelist(bundle)
     let keyword = extractKeywordsFromFilenameList(filenameList, 3, dateString)
+    
+    while (keyword.startsWith('_')) {
+      keyword = keyword.slice(1)
+    }
+    while (keyword.endsWith('.')) {
+      keyword = keyword.slice(0, -1)
+    }
     
     let bundleName = dateString + ' ' + keyword
     
