@@ -38,12 +38,44 @@ async function bundleFilesMain (options, dir) {
 }
 
 function sortFiles (files) {
-  let fileObjects = files.map(file => {
+  let fileObjects = []
+  files.forEach(file => {
+    if (file.indexOf('@Recycle') > -1
+            || file.indexOf('lost+found') > -1
+            || file.indexOf('@Recently-Snapshot') > -1) {
+      return false
+    }
+    
     //console.log(file, fs.lstatSync(file))
     let time = fs.lstatSync(file).mtime
     
     if (file.endsWith('2016年的檔案.csv')) {
       time = dayjs('20160101').toDate()
+    }
+    
+    /**
+     * if (s.match(/^\d/)) {
+   // Return true
+}
+if (f.match(/^\d/)) {
+   // Return false
+}
+     */
+    let basename = path.basename(file)
+    if (/^\d{8}/.test(basename)) {
+      let dateString = basename.slice(0, 8)
+      try {
+        time = dayjs(dateString).toDate()
+      }
+      catch (e) {}
+    }
+    else if (basename.startsWith('Screenshot_') 
+            && /^\d{8}/.test(basename.slice(11))) {
+      let dateString = basename.slice(11, 19)
+      try {
+        time = dayjs(dateString).toDate()
+      }
+      catch (e) {}
     }
     
     let parse = path.parse(file)
@@ -53,13 +85,13 @@ function sortFiles (files) {
       ext = ext.slice(1)
     }
     
-    return {
+    fileObjects.push({
       file,
       filename: parse.name,
       ext,
       time,
       timeUnix: time.getTime()
-    }
+    })
   })
   
   fileObjects.sort((a, b) => {
