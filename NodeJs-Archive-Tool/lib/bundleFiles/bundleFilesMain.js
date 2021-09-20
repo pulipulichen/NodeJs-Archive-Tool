@@ -98,11 +98,13 @@ if (f.match(/^\d/)) {
       let dateString = basename.slice(4, 12)
       try {
         let tmpTime = dayjs(dateString).toDate()
-        if (dayjs(time).fiff(tmpTime, 'year') < 30) {
+        if (dayjs(time).diff(tmpTime, 'year') < 30) {
           time = tmpTime
         }
       }
-      catch (e) {}
+      catch (e) {
+        console.error(e)
+      }
     }
     
     let parse = path.parse(file)
