@@ -5,6 +5,7 @@ const getFilelistFromFolder = require('./../fileList/getFilelistFromFolder.js')
 const getDistName = require('./getDistName.js')
 
 const exifr = require('exifr')
+const cache = require('./../cache/node-cache-sqlite.js')
 
 const renameDirBaseLocation = async function (dir) {
   let fileList = await getFilelistFromFolder(dir)
@@ -60,7 +61,10 @@ const renameDirBaseLocation = async function (dir) {
   
   // ------------------------
   
-  let dist = await getDistName(mainGPS.latitude, mainGPS.longitude)
+  let dist = await cache.get('gps', `${mainGPS.latitude},${mainGPS.longitude}`, async () => {
+    return await getDistName(mainGPS.latitude, mainGPS.longitude)
+  })
+  
   if (!dist || dist === '') {
     return false
   }

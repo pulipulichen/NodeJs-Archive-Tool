@@ -2,6 +2,7 @@
 const https = require("https")
 const localConfig = require('./../../local-config.js')
 
+
 const getDistName = function (latitude, longitude) {
   let key = localConfig.opencageAPIKey
   //console.log(key, localConfig)
