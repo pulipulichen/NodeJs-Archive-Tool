@@ -20,6 +20,9 @@ const flatFilesDirectories = require('./../fileList/flatFilesDirectories.js')
 const renameDirBaseLocation = require('./renameDirBaseLocation.js')
 const prependDateFromExif = require('./prependDateFromExif.js')
 
+const moveDirToYYYYMMDir = require('./../fileList/moveDirToYYYYMMDir.js')
+const buildPreviewGrid = require('./buildPreviewGrid.js')
+
 async function bundlePhotosMain (options, dir) {
   
   let { 
@@ -60,6 +63,10 @@ async function bundlePhotosMain (options, dir) {
   //console.log(bundleNames)
   
   await moveBackTempDir(dir)
+  
+  await buildPreviewGrid(dir)
+  
+  await moveDirToYYYYMMDir(dir)
 }
 
 

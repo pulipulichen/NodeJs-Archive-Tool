@@ -11,6 +11,7 @@
   "author": "pudding",
   "contributors": [],
   "dependencies": {
+    "@wylie39/image-collage": "^0.1.0",
     "better-sqlite3": "^7.4.3",
     "csv-append": "^1.0.0",
     "dayjs": "^1.10.5",
