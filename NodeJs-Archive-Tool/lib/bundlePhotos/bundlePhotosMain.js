@@ -12,7 +12,12 @@ const createBundleNames = require('./../bundleFiles/createBundleNames.js')
 const createBundleOfFiles = require('./../bundleFiles/createBundleOfFiles.js')
 const sortFiles = require('./../bundleFiles/sortFiles.js')
 
+const moveBackTempDir = require('./../bundleFiles/moveBackTempDir.js')
+const moveToTempDir = require('./../bundleFiles/moveToTempDir.js')
+
 const flatFilesDirectories = require('./../fileList/flatFilesDirectories.js')
+
+const renameDirBaseLocation = require('./renameDirBaseLocation.js')
 
 async function bundlePhotosMain (options, dir) {
   
@@ -21,6 +26,9 @@ async function bundlePhotosMain (options, dir) {
   } = options
   
   // -------------------
+  
+  await moveToTempDir(dir)
+  //return false
   
   await flatFilesDirectories(dir)
   
@@ -41,9 +49,15 @@ async function bundlePhotosMain (options, dir) {
   //return false
   
   // 確認是否有類似資料夾的名字
-  await moveFilesToBundle(dir, bundles, bundleNames)
+  let bundleDirList = await moveFilesToBundle(dir, bundles, bundleNames)
+  //console.log(bundleDirList)
   
+  for (let i = 0; i < bundleDirList.length; i++) {
+    await renameDirBaseLocation(bundleDirList[i])
+  }
   //console.log(bundleNames)
+  
+  await moveBackTempDir(dir)
 }
 
 

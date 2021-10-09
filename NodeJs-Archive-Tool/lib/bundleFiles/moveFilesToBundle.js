@@ -3,7 +3,7 @@ const path = require('path')
 const sleep = require('./../await/sleep.js')
 
 async function moveFilesToBundle(dir, bundles, bundleNames) {
-  bundles.forEach((fileObjects, i) => {
+  return bundles.map((fileObjects, i) => {
     let bundleName = bundleNames[i]
     let bundleDir = dir + '/' + bundleName
     
@@ -31,6 +31,8 @@ async function moveFilesToBundle(dir, bundles, bundleNames) {
         //}
       //}
     })
+    
+    return bundleDir
   })
 }
 
