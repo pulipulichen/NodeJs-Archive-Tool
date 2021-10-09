@@ -3,6 +3,7 @@ const path = require('path')
 const dayjs = require('dayjs')
 
 const getDirectories = require('./../fileList/getDirectories.js')
+//const removeFile = require('./../fileRemove/removeFile.js')
 
 const moveBackTempDir = async function (dir) {
   let tempDir = dir + '-temp'
@@ -19,6 +20,8 @@ const moveBackTempDir = async function (dir) {
     
     fs.renameSync(fromPath, toPath)
   })
+  
+  fs.rmdirSync(tempDir, { recursive: true })
 }
 
 module.exports = moveBackTempDir
