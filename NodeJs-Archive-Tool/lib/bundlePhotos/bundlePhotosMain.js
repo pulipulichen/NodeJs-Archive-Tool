@@ -22,6 +22,7 @@ const prependDateFromExif = require('./prependDateFromExif.js')
 
 const moveDirToYYYYMMDir = require('./../fileList/moveDirToYYYYMMDir.js')
 const buildPreviewGrid = require('./buildPreviewGrid.js')
+const renameDirBaseFace = require('./renameDirBaseFace.js')
 
 async function bundlePhotosMain (options, dir) {
   
@@ -63,6 +64,8 @@ async function bundlePhotosMain (options, dir) {
   //console.log(bundleNames)
   
   await moveBackTempDir(dir)
+  
+  await renameDirBaseFace(dir)
   
   await buildPreviewGrid(dir)
   

@@ -11,6 +11,8 @@
   "author": "pudding",
   "contributors": [],
   "dependencies": {
+    "@tensorflow/tfjs-node": "^3.9.0",
+    "@vladmandic/face-api": "^1.5.4",
     "@wylie39/image-collage": "^0.1.0",
     "better-sqlite3": "^7.4.3",
     "csv-append": "^1.0.0",
