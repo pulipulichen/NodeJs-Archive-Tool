@@ -18,6 +18,7 @@ const moveToTempDir = require('./../bundleFiles/moveToTempDir.js')
 const flatFilesDirectories = require('./../fileList/flatFilesDirectories.js')
 
 const renameDirBaseLocation = require('./renameDirBaseLocation.js')
+const prependDateFromExif = require('./prependDateFromExif.js')
 
 async function bundlePhotosMain (options, dir) {
   
@@ -31,6 +32,7 @@ async function bundlePhotosMain (options, dir) {
   //return false
   
   await flatFilesDirectories(dir)
+  await prependDateFromExif(dir)
   
   let files = await getFilesInDirectory(dir)
   let subdirs = await getDirectories(dir)

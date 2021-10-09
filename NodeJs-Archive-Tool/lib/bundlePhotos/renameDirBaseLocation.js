@@ -65,13 +65,19 @@ const renameDirBaseLocation = async function (dir) {
     return false
   }
   
-  dist = '@' + dist
+  dist = '@' + dist + ' '
   
-  if (dir.endsWith(dist)) {
+  let basename = path.basename(dir)
+  let part1 = basename.slice(0, 9)
+  let part2 = basename.slice(9)
+  
+  if (part2.startsWith(dist)) {
     return false
   }
   
-  fs.renameSync(dir, dir+dist)
+  let toPath = path.resolve(path.dirname(dir), part1 + dist + part2)
+  
+  fs.renameSync(dir, toPath)
 }
 
 module.exports = renameDirBaseLocation
