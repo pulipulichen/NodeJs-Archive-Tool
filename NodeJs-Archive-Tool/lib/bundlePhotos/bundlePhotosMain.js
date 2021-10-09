@@ -7,7 +7,7 @@ const getDirectories = require('./../fileList/getDirectories.js')
 
 const extractKeywordsFromFilenameList = require('./../bundleFiles/extractKeywordsFromFilenameList.js')
 const moveFilesToBundle = require('./../bundleFiles/moveFilesToBundle.js')
-const buildWeightedFilelist = require('./../bundleFiles/buildWeightedFilelist.js')
+
 const createBundleNames = require('./../bundleFiles/createBundleNames.js')
 const createBundleOfFiles = require('./../bundleFiles/createBundleOfFiles.js')
 const sortFiles = require('./../bundleFiles/sortFiles.js')
@@ -23,8 +23,6 @@ async function bundlePhotosMain (options, dir) {
   // -------------------
   
   await flatFilesDirectories(dir)
-  
-  return false
   
   let files = await getFilesInDirectory(dir)
   let subdirs = await getDirectories(dir)

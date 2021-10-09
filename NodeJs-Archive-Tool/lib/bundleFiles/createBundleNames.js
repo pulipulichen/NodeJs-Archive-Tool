@@ -2,6 +2,9 @@
 const dayjs = require('dayjs')
 const fs = require('fs')
 
+const buildWeightedFilelist = require('./buildWeightedFilelist.js')
+const extractKeywordsFromFilenameList = require('./extractKeywordsFromFilenameList.js')
+
 const createBundleNames = function (bundles, dir, subdirs) {
   return bundles.map(bundle => {
     let time = bundle[0].time

@@ -43,7 +43,7 @@ const flatFilesDirectories = async function (dir) {
     return path.resolve(dir, flatedPath)
   })
   
-  console.log(flatedFileList)
+  //console.log(flatedFileList)
   
   fileList.forEach((fromPath, i) => {
     let toPath = flatedFileList[i]
@@ -54,9 +54,9 @@ const flatFilesDirectories = async function (dir) {
   // ---------------------------------
   
   let dirList = getDirectories(dir)
-  dirList.forEach(dir => {
-    trashFile(dir)
-  })
+  for (let i = 0; i < dirList.length; i++) {
+    await trashFile(dirList[i])
+  }
 }
 
 module.exports = flatFilesDirectories
