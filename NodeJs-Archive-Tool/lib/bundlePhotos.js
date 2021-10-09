@@ -6,11 +6,10 @@ const fs = require('fs')
 let bundlePhotosMain
 
 function loadPackages () {
-  bundlePhotosMain = require('./bundleFiles/bundlePhotosMain.js')
+  bundlePhotosMain = require('./bundlePhotos/bundlePhotosMain.js')
 }
 
 // ---------------
-
 
 module.exports = async function (options) {
   await handleFileFromArgv({
