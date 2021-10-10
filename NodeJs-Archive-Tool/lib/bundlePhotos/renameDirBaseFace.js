@@ -3,8 +3,8 @@
 const fs = require('fs')
 const path = require('path')
 
-const tf = require('@tensorflow/tfjs-node')
-const faceapi = require('@vladmandic/face-api');
+let tf
+let faceapi
 
 const canvas = require('canvas');
 
@@ -42,8 +42,10 @@ const renameDirBaseFace = async function (dir) {
         continue
       }
       
-      await initFaceapi()
+      
       let isImageHasFace = await nodeCacheSQLite.get('face-api', filepath, async () => {
+        await initFaceapi()
+        //console.log('[FACE API]', filepath)
         return await hasFace(filepath)
       })
       if (isImageHasFace) {
@@ -103,6 +105,9 @@ const initFaceapi = async function () {
   if (faceAPIisReady) {
     return true
   }
+  
+  tf = require('@tensorflow/tfjs-node')
+  faceapi = require('@vladmandic/face-api');
   
     await faceapi.tf.setBackend("tensorflow");
     await faceapi.tf.enableProdMode();

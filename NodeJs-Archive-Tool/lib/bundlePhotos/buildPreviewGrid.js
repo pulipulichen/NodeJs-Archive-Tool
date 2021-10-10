@@ -31,7 +31,7 @@ const buildPreviewGrid = async function (dir) {
 }
 
 const buildCollage = function (photos) {
-  const collageWidth = 1000;
+  const collageWidth = 500;
   let outputPath = path.resolve(path.dirname(photos[0]), previewFilename)
   if (fs.existsSync(outputPath)) {
     return outputPath
