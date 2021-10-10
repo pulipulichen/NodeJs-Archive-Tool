@@ -14,6 +14,7 @@ const sortFiles = require('./../bundleFiles/sortFiles.js')
 
 const moveBackTempDir = require('./../bundleFiles/moveBackTempDir.js')
 const moveToTempDir = require('./../bundleFiles/moveToTempDir.js')
+const removeTempDir = require('./../bundleFiles/removeTempDir.js')
 
 const flatFilesDirectories = require('./../fileList/flatFilesDirectories.js')
 
@@ -24,6 +25,8 @@ const moveDirToYYYYMMDir = require('./../fileList/moveDirToYYYYMMDir.js')
 const buildPreviewGrid = require('./buildPreviewGrid.js')
 const renameDirBaseFace = require('./renameDirBaseFace.js')
 
+const sleep = require('./../await/sleep.js')
+
 async function bundlePhotosMain (options, dir) {
   
   let { 
@@ -32,11 +35,18 @@ async function bundlePhotosMain (options, dir) {
   
   // -------------------
   
+  console.log('[moveToTempDir]')
+  
   await moveToTempDir(dir)
   //return false
   
+  console.log('[flatFilesDirectories]')
   await flatFilesDirectories(dir)
-  await prependDateFromExif(dir)
+  
+  //console.log('[prependDateFromExif]')
+  //await prependDateFromExif(dir)
+  
+  await sleep(1000)
   
   let files = await getFilesInDirectory(dir)
   let subdirs = await getDirectories(dir)
@@ -46,30 +56,52 @@ async function bundlePhotosMain (options, dir) {
   let filesObjectSorted = sortFiles(files)
   //console.log(filesObjectSorted)
   
+  await sleep(1000)
+  
+  console.log('[createBundleOfFiles]')
   let bundles = createBundleOfFiles(filesObjectSorted, bundleIntervalHours)
   //console.log(bundles)
   
+  console.log('[createBundleNames]')
   let bundleNames = createBundleNames(bundles, dir, subdirs)
   
   //console.log(bundleNames)
   //return false
   
   // 確認是否有類似資料夾的名字
+  console.log('[moveFilesToBundle]')
   let bundleDirList = await moveFilesToBundle(dir, bundles, bundleNames)
+  
+  //return false
   //console.log(bundleDirList)
   
-  for (let i = 0; i < bundleDirList.length; i++) {
-    await renameDirBaseLocation(bundleDirList[i])
-  }
+  console.log('[renameDirBaseLocation]')
+  await sleep(1000)
+  await renameDirBaseLocation(dir)
   //console.log(bundleNames)
   
+  await sleep(1000)
+  
+  console.log('[moveBackTempDir]')
   await moveBackTempDir(dir)
   
+  await sleep(1000)
+  
+  console.log('[renameDirBaseFace]')
   await renameDirBaseFace(dir)
   
+  await sleep(1000)
+  
+  console.log('[buildPreviewGrid]')
   await buildPreviewGrid(dir)
   
+  await sleep(1000)
+  
+  console.log('[moveDirToYYYYMMDir]')
   await moveDirToYYYYMMDir(dir)
+  
+  console.log('[removeTempDir]')
+  await removeTempDir(dir)
 }
 
 

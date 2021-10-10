@@ -15,6 +15,9 @@ const exifr = require('exifr')
 
 const nodeCacheSQLite = require('./../cache/node-cache-sqlite.js')
 
+const sleep = require('./../await/sleep.js')
+const fileMove = require('./../fileMove/fileMove.js')
+
 const renameDirBaseFace = async function (dir) {
   let dirList = await getDirectories(dir)
   
@@ -53,6 +56,9 @@ const renameDirBaseFace = async function (dir) {
       // 修改資料夾名稱
       let parentDir = path.dirname(dirpath)
       let dirname = path.basename(dirpath)
+      if (dirname.startsWith('/')) {
+        dirname = dirname.slice(1)
+      }
       
       let part1 = dirname.slice(0, 9)
       let part2 = dirname.slice(9)
@@ -66,7 +72,8 @@ const renameDirBaseFace = async function (dir) {
       let toDirname = part1 + mark + part2
       let toPath = path.resolve(parentDir, toDirname)
       //console.log(dirpath, toPath)
-      fs.renameSync(dirpath, toPath)
+      
+      await fileMove(dirpath, toPath)
     }
   }
 }

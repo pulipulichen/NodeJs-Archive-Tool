@@ -4,6 +4,8 @@ const dayjs = require('dayjs')
 
 const getDirectories = require('./../fileList/getDirectories.js')
 
+const fileMove = require('./../fileMove/fileMove.js')
+
 const moveToTempDir = async function (dir) {
   let tempDir = dir + '-temp'
   
@@ -54,12 +56,20 @@ const moveToTempDir = async function (dir) {
     }
   }
   
-  dirToTemp.forEach(dirPath => {
-    let fromPath = dirPath
+  for (let i = 0; i < dirToTemp.length; i++) {
+    let fromPath = dirToTemp[i]
     let toPath = path.resolve(tempDir, path.basename(fromPath))
     //console.log(fromPath, toPath)
-    fs.renameSync(fromPath, toPath)
-  })
+    //fs.renameSync(fromPath, toPath)
+    await fileMove(fromPath, toPath)
+  }
+  
+//  dirToTemp.forEach(dirPath => {
+//    let fromPath = dirPath
+//    let toPath = path.resolve(tempDir, path.basename(fromPath))
+//    //console.log(fromPath, toPath)
+//    fs.renameSync(fromPath, toPath)
+//  })
 }
 
 module.exports = moveToTempDir

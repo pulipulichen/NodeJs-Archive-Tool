@@ -15,11 +15,14 @@ const buildPreviewGrid = async function (dir) {
     
     let filelist = await getFilesInDirectory(dirpath)
     filelist = filelist.filter(f => !f.endsWith(previewFilename))
+      .filter(f => (f.endsWith('.png') || f.endsWith('.jpeg') || f.endsWith('.jpg')))
     
     if (filelist.length < 2) {
       continue
     }
     
+    //console.log(dirpath)
+    //console.log(filelist)
     await buildCollage(filelist)
     //console.log(dirpath)
     //console.log(filelist)

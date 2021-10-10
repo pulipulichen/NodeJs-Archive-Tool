@@ -2,8 +2,13 @@ const fs = require('fs')
 const path = require('path')
 const sleep = require('./../await/sleep.js')
 
+const fileMove = require('./../fileMove/fileMove.js')
+
 async function moveFilesToBundle(dir, bundles, bundleNames) {
-  return bundles.map((fileObjects, i) => {
+  let output = []
+  
+  for (let i = 0; i < bundles.length; i++) {
+    let fileObjects = bundles[i]
     let bundleName = bundleNames[i]
     let bundleDir = dir + '/' + bundleName
     
@@ -11,29 +16,43 @@ async function moveFilesToBundle(dir, bundles, bundleNames) {
       fs.mkdirSync(bundleDir)
     }
     
-    fileObjects.forEach(({file}) => {
+    for (let j = 0; j < fileObjects.length; j++) {
+      let file = fileObjects[j]
+      let filepath = file.file
       //console.log(file, bundleDir + '/' + path.basename(file))
-      if (fs.existsSync(file) === false) {
-        return true
+      if (fs.existsSync(filepath) === false) {
+        //return true
+        console.log('[ERROR] File not found: ', bundleName, filepath)
+        continue
       }
       
-      if (path.basename(file) === bundleName) {
-        return false
+      if (path.basename(filepath) === bundleName) {
+        //return false
+        console.log('[ERROR] Same name: ', bundleName, filepath)
+        continue
       }
       
+      await fileMove(filepath, bundleDir + '/' + path.basename(filepath))
       //while (true) { 
         //try {
-          fs.renameSync(file, bundleDir + '/' + path.basename(file))
+          // fs.renameSync(file, bundleDir + '/' + path.basename(file))
         //  break
         //}
         //catch (e) {
         //  await sleep(1000)
         //}
       //}
-    })
+    }
+//    
+//    fileObjects.forEach(({file}) => {
+//      
+//    })
     
-    return bundleDir
-  })
+    //return bundleDir
+    output.push(bundleDir)
+  }
+  
+  return output
 }
 
 module.exports = moveFilesToBundle
