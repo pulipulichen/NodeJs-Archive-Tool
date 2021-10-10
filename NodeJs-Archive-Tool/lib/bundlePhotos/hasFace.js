@@ -3,8 +3,8 @@
 const fs = require('fs')
 const path = require('path')
 
-let tf
-let faceapi
+const tf = require('@tensorflow/tfjs-node')
+const faceapi = require('@vladmandic/face-api');
 
 const canvas = require('canvas');
 
@@ -45,8 +45,7 @@ const initFaceapi = async function () {
   
   console.log('initFaceapi 1')
   
-  tf = require('@tensorflow/tfjs-node')
-  faceapi = require('@vladmandic/face-api');
+  
   
   console.log('initFaceapi 2')
   
