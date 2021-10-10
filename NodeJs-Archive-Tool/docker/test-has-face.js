@@ -2,7 +2,7 @@
 
 const path = require('path')
 
-const hasFace = require('./../lib/bundlePhotos/')
+const hasFace = require('./../lib/bundlePhotos/hasFace.js')
 let main = async function () {
   console.log(await hasFace(path.resolve(__dirname, './img.jpg') ))
 }
