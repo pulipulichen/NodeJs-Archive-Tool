@@ -11,6 +11,7 @@ const flatFilesDirectories = async function (dir) {
   
   fileList = fileList.filter(f => f.indexOf('/@Recycle/') === -1)
         .filter(f => f.indexOf('/lost+found/') === -1)
+        .filter(f => f.indexOf('/.Trash-0/') === -1)
         .filter(f => f.indexOf('/@Recently-Snapshot/') === -1)
   
   // 建立對應的檔案名稱

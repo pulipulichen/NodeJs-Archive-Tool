@@ -7,6 +7,7 @@ const sortFiles = function (files) {
   files.forEach(file => {
     if (file.indexOf('@Recycle') > -1
             || file.indexOf('lost+found') > -1
+            || file.indexOf('.Trash-0') > -1
             || file.indexOf('@Recently-Snapshot') > -1) {
       return false
     }
