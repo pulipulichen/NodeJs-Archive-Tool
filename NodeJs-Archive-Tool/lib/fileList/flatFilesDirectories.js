@@ -9,6 +9,10 @@ const flatFilesDirectories = async function (dir) {
   //console.log(dir)
   let fileList = await getFileFromFolderRecursive(dir)
   
+  fileList = fileList.filter(f => f.indexOf('/@Recycle/') === -1)
+        .filter(f => f.indexOf('/lost+found/') === -1)
+        .filter(f => f.indexOf('/@Recently-Snapshot/') === -1)
+  
   // 建立對應的檔案名稱
   let flatedFileList = fileList.map(filePath => {
     let relativeFilePath = filePath.slice(dir.length)
@@ -24,6 +28,8 @@ const flatFilesDirectories = async function (dir) {
     filenameParts = filenameParts.split('.').join(' ')
     filenameParts = filenameParts.split('+').join(' ')
     filenameParts = filenameParts.split('=').join(' ')
+    filenameParts = filenameParts.split('　').join(' ')
+    filenameParts = filenameParts.split('｜').join(' ')  // Download 2021 臺北白晝之夜｜布丁｜20211002 1139
     filenameParts = filenameParts.split(' ')
     
     var result = [];

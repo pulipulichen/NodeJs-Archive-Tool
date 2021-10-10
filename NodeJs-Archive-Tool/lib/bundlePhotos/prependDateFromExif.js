@@ -25,7 +25,7 @@ const prependDateFromExif = async function (dir) {
       let date = dayjs(exif.DateTimeOriginal).format('YYYYMMDD')
       //console.log(date, filename)
       
-      let basename = path.basename(filename).slice(1)
+      let basename = path.basename(filename)
       if (basename.startsWith(date + ' ')) {
         continue
       }

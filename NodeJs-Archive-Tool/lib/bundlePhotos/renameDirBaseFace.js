@@ -35,7 +35,7 @@ const renameDirBaseFace = async function (dir) {
       let exif = await exifr.parse(filepath)
       //console.log(filepath)
       //console.log(exif)
-      if (!exif.Orientation) {
+      if (!exif || !exif.Orientation) {
         continue
       }
       
