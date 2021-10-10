@@ -1,5 +1,5 @@
 *.bat
-*.sh
+/*.sh
 !/bin/linux/*.sh
 *.sqlite
 lock.*.txt
