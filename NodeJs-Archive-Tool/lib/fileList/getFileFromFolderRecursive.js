@@ -6,9 +6,9 @@ const { readdir } = require('fs').promises;
 async function getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true });
   const files = await Promise.all(dirents.map(async (dirent) => {
-    if (dirent.name.startsWith('.')) {
-      return []
-    }
+//    if (dirent.name.startsWith('.')) {
+//      return []
+//    }
     
     const res = resolve(dir, dirent.name)
     
