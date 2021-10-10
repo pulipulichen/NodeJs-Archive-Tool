@@ -6,5 +6,6 @@ BASEDIR=$(dirname "$0")
 cd "$BASEDIR"
 cd ..
 cd ..
+cd ..
 
 git pull
