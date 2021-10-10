@@ -92,8 +92,8 @@ async function bundlePhotosMain (options, dir) {
   
   await sleep(1000)
   
-  console.log('[buildPreviewGrid]')
-  await buildPreviewGrid(dir)
+//  console.log('[buildPreviewGrid]')
+//  await buildPreviewGrid(dir)
   
   await sleep(1000)
   
