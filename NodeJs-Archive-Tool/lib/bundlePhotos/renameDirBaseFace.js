@@ -13,6 +13,8 @@ const getFilesInDirectory = require('./../fileList/getFilesInDirectory.js')
 
 const exifr = require('exifr')
 
+const nodeCacheSQLite = require('./../cache/node-cache-sqlite.js')
+
 const renameDirBaseFace = async function (dir) {
   let dirList = await getDirectories(dir)
   
@@ -37,7 +39,11 @@ const renameDirBaseFace = async function (dir) {
         continue
       }
       
-      if (await hasFace(filepath)) {
+      await initFaceapi()
+      let isImageHasFace = await nodeCacheSQLite.get('face-api', filepath, async () => {
+        return await hasFace(filepath)
+      })
+      if (isImageHasFace) {
         peopleExisted = true
         break
       }
@@ -85,14 +91,12 @@ const detect = async function (tensor) {
   return result;
 }
 
-const hasFace = async function (input) {
-  try {
-    //let input = '/home/pudding/Documents/NetBeansProjects/[nodejs]/NodeJs-Archive-Tool/NodeJs-Archive-Tool/[test/20211009 photo/20211009 a/LINE_1578402778237.jpg'
-    //console.log('[gogogo]', input)
-    input = fs.readFileSync(input)
-    //const detection = await faceapi.detectSingleFace(input)
-    //console.log(detection)
-
+let faceAPIisReady = false
+const initFaceapi = async function () {
+  if (faceAPIisReady) {
+    return true
+  }
+  
     await faceapi.tf.setBackend("tensorflow");
     await faceapi.tf.enableProdMode();
     await faceapi.tf.ENV.set("DEBUG", false);
@@ -112,6 +116,18 @@ const hasFace = async function (input) {
     tinyFaceDetector = new faceapi.TinyFaceDetectorOptions({
       minConfidence: 0.5,
     })
+    
+    faceAPIisReady = true
+}
+
+const hasFace = async function (input) {
+  try {
+    //let input = '/home/pudding/Documents/NetBeansProjects/[nodejs]/NodeJs-Archive-Tool/NodeJs-Archive-Tool/[test/20211009 photo/20211009 a/LINE_1578402778237.jpg'
+    //console.log('[gogogo]', input)
+    input = fs.readFileSync(input)
+    //const detection = await faceapi.detectSingleFace(input)
+    //console.log(detection)
+
 
     const tensor = await image(input);
     const result = await detect(tensor);
