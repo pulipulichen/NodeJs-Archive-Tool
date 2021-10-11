@@ -2,6 +2,7 @@
 const https = require("https")
 const localConfig = require('./../../local-config.js')
 
+const sleep = require('./../await/sleep.js')
 
 const getDistName = function (latitude, longitude) {
   let key = localConfig.opencageAPIKey
@@ -27,7 +28,7 @@ const getDistName = function (latitude, longitude) {
             data += chunk;
         });
         // response event 'end' 當接收 data 結束的時候。
-        response.on('end', function(){
+        response.on('end', async function(){
             // 將 JSON parse 成物件
             data = JSON.parse(data);
             //console.log(data); // 可開啟這行在 Command Line 觀看 data 內容
@@ -41,6 +42,7 @@ const getDistName = function (latitude, longitude) {
               dist = components['city']
             }
 
+            await sleep(1000)
             resolve(dist)
         });
     }).on('error', function(e){ // http get 錯誤時
