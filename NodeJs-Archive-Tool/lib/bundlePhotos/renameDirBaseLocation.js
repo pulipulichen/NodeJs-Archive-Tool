@@ -32,7 +32,7 @@ const renameDirBaseLocation = async function (dir) {
 
       try {
         let {latitude, longitude} = await exifr.gps(filename)
-        //console.log(latitude, longitude)
+        //console.log(filename, latitude, longitude)
         //let dist = await getDistName(latitude, longitude)
         //console.log(dist)
         hasGPSCount++
@@ -49,10 +49,12 @@ const renameDirBaseLocation = async function (dir) {
 
     }
 
+    //console.log(fileCount, hasGPSCount, (hasGPSCount / fileCount))
+
     // ----------------------------
 
     let doRename = false
-    if (fileCount >= 5 && (hasGPSCount / fileCount) > 0.8) {
+    if (fileCount >= 5 && (hasGPSCount / fileCount) > 0.5) {
       doRename = true
     }
     else if (fileCount >= 2 
@@ -66,7 +68,8 @@ const renameDirBaseLocation = async function (dir) {
     }
 
     if (doRename === false) {
-      return false
+      //return false
+      continue
     }
 
     // ------------------------
@@ -76,21 +79,27 @@ const renameDirBaseLocation = async function (dir) {
     })
 
     if (!dist || dist === '') {
-      return false
+      //return false
+      continue
     }
 
     dist = '@' + dist + ' '
 
-    let basename = path.basename(dir)
+    let basename = path.basename(dirpath)
+    if (basename.startsWith('/')) {
+      basename = basename.slice(1)
+    }
     let part1 = basename.slice(0, 9)
     let part2 = basename.slice(9)
 
     if (part2.startsWith(dist)) {
-      return false
+      //return false
+      continue
     }
 
-    let toPath = path.resolve(path.dirname(dir), part1 + dist + part2)
-    await fileMove(dir, toPath)
+    let toPath = path.resolve(path.dirname(dirpath), part1 + dist + part2)
+    console.log(dirpath, toPath)
+    await fileMove(dirpath, toPath)
   }
 }
 
