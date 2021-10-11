@@ -43,18 +43,16 @@ const initFaceapi = async function () {
     return true
   }
   
-  //console.log('initFaceapi 1')
-  
   tf = require('@tensorflow/tfjs-node')
   faceapi = require('@vladmandic/face-api');
-  
+
   //console.log('initFaceapi 2')
-  
+
     await faceapi.tf.setBackend("tensorflow");
     await faceapi.tf.enableProdMode();
     await faceapi.tf.ENV.set("DEBUG", false);
     await faceapi.tf.ready();
-    
+
 //console.log('initFaceapi 3')
   //  console.log(
   //    `Version: TensorFlow/JS ${faceapi.tf?.version_core} FaceAPI ${
@@ -70,14 +68,19 @@ const initFaceapi = async function () {
     tinyFaceDetector = new faceapi.TinyFaceDetectorOptions({
       minConfidence: 0.5,
     })
-  
+
   //console.log('initFaceapi 4')
     faceAPIisReady = true
 }
 
 const hasFace = async function (input) {
   //console.log('hasFace 1')
-  await initFaceapi()
+  try {
+    await initFaceapi()
+  }
+  catch (e) {
+    return false
+  }
   
   //console.log('hasFace 2')
   try {
