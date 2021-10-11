@@ -79,6 +79,8 @@ const hasFace = async function (input) {
     await initFaceapi()
   }
   catch (e) {
+    console.error(e)
+    console.log('[INFO] Maybe tensorflow is not ready.')
     return false
   }
   
