@@ -14,12 +14,22 @@ module.exports = async function (file) {
       let platform = await os.platform()
       //console.log()
       
+      /*
       try {
         await trash(file, {
           glob: false
         })
       }
       catch (e) {
+        await execShellCommand('trash ' + file)
+      }
+      */
+      if (platform !== 'linux') {
+        await trash(file, {
+          glob: false
+        })
+      }
+      else {
         await execShellCommand('trash ' + file)
       }
       break
