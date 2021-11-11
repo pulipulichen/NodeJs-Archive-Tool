@@ -24,7 +24,7 @@ module.exports = function () {
     }
   })
   
-  console.log(output)
+  //console.log(output)
   
   return output
 }
