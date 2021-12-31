@@ -3,4 +3,5 @@
 !/bin/linux/*.sh
 *.sqlite
 lock.*.txt
+/node_modules
 /test
