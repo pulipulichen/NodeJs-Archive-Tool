@@ -5,6 +5,7 @@ const handleFileFromArgv = require('./cli/handleFileFromArgv.js')
 let archiveFile
 let removeFile
 let extractArchive
+const sleep = require('./await/sleep.js')
 
 function loadPackages () {
   archiveFile = require('./archive/archiveFile.js')
@@ -31,7 +32,9 @@ module.exports = async function (archiveFormat) {
         // 表示需要轉換爲7z
         let fileDir = await extractArchive(file)
         await removeFile(file)
-
+        
+        await sleep(3000)
+        
         await archiveFile(archiveFormat, fileDir)
         await removeFile(fileDir)
       } else {

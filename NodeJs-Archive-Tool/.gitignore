@@ -3,3 +3,4 @@
 !/bin/linux/*.sh
 *.sqlite
 lock.*.txt
+/test

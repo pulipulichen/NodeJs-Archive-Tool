@@ -45,7 +45,7 @@ let runFileArchiveCommand = async function (archiveFormat, file) {
   if (os.platform() === 'win32' || true) {
     tmpPath = path.dirname(outputFile) + '/' + filename + '.' + archiveFormat
   }
-  command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${tmpPath}" "${filename}"`
+  command = `${get7zPath()} a -t${archiveFormat} -mmt=off -mx=9 "${tmpPath}" "${filename}"`
   
   //console.log(fileDir)
   
@@ -97,7 +97,7 @@ let runDirArchiveCommand = async function (archiveFormat, file) {
     tmpPath = targetPath
   }
   
-  command = `${get7zPath()} a -t7z -mmt=off -mx=9 "${tmpPath}" *`
+  command = `${get7zPath()} a -t${archiveFormat} -mmt=off -mx=9 "${tmpPath}" *`
   //throw Error(command + '\n' + os.tmpdir())
   //console.log(fileDir)
   //console.log(command)
