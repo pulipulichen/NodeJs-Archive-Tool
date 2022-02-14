@@ -30,7 +30,7 @@ module.exports = async function (file) {
         })
       }
       else {
-        await execShellCommand('trash ' + file)
+        await execShellCommand('trash "' + file + '"')
       }
       break
     } catch (e) {
